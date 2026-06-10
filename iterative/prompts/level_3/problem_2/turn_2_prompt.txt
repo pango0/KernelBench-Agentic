@@ -1,0 +1,126 @@
+You previously generated a CUDA kernel implementation (refinement turn 2).
+
+Original task:
+You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.
+
+You have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.
+
+You are given the following architecture:
+
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self, input_size, hidden_layer_sizes, output_size):
+        """
+        :param input_size: The number of input features
+        :param hidden_layer_sizes: A list of ints containing the sizes of each hidden layer
+        :param output_size: The number of output features
+        """
+        super(Model, self).__init__()
+        
+        layers = []
+        current_input_size = input_size
+        
+        for hidden_size in hidden_layer_sizes:
+            layers.append(nn.Linear(current_input_size, hidden_size))
+            layers.append(nn.ReLU())
+            current_input_size = hidden_size
+        
+        layers.append(nn.Linear(current_input_size, output_size))
+        
+        self.network = nn.Sequential(*layers)
+    
+    def forward(self, x):
+        """
+        :param x: The input tensor, shape (batch_size, input_size)
+        :return: The output tensor, shape (batch_size, output_size)
+        """
+        return self.network(x)
+
+# Test code
+batch_size = 128
+input_size = 16384
+hidden_layer_sizes = [32768, 32768]
+output_size = 16384
+
+def get_inputs():
+    return [torch.rand(batch_size, input_size)]
+
+def get_init_inputs():
+    return [input_size, hidden_layer_sizes, output_size]
+
+Note: The kernels should be optimized for FP32 (32-bit floating point) precision.
+
+Optimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!
+
+
+Previous implementation:
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Function
+from torch.cuda.amp import custom_fwd, custom_bwd
+
+class CustomMatMulReLUFunction(Function):
+    @staticmethod
+    @custom_fwd(cast_inputs=torch.float32)
+    def forward(ctx, input, weight):
+        ctx.save_for_backward(input, weight)
+        output = torch.matmul(input, weight)
+        return F.relu(output)
+
+    @staticmethod
+    @custom_bwd
+    def backward(ctx, grad_output):
+        input, weight = ctx.saved_tensors
+        grad_input = torch.matmul(grad_output, weight.t())
+        grad_weight = torch.matmul(input.t(), grad_output)
+        return grad_input, grad_weight
+
+class CustomLinear(nn.Module):
+    def __init__(self, in_features, out_features):
+        super(CustomLinear, self).__init__()
+        self.weight = nn.Parameter(torch.randn(out_features, in_features))
+        self.bias = nn.Parameter(torch.randn(out_features))
+
+    def forward(self, input):
+        return CustomMatMulReLUFunction.apply(input, self.weight) + self.bias
+
+class ModelNew(nn.Module):
+    def __init__(self, input_size, hidden_layer_sizes, output_size):
+        super(ModelNew, self).__init__()
+        
+        layers = []
+        current_input_size = input_size
+        
+        for hidden_size in hidden_layer_sizes:
+            layers.append(CustomLinear(current_input_size, hidden_size))
+            current_input_size = hidden_size
+        
+        layers.append(CustomLinear(current_input_size, output_size))
+        
+        self.network = nn.Sequential(*layers)
+    
+    def forward(self, x):
+        return self.network(x)
+```
+
+Evaluation feedback:
+turn=1
+compiled=True
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=39.4
+runtime_error=mat1 and mat2 shapes cannot be multiplied (128x16384 and 32768x16384)
+
+Please improve the implementation.
+
+Requirements:
+- Output ONLY valid Python code in a ```python``` block
+- Define ModelNew
+- Preserve correctness
+- Optimize performance

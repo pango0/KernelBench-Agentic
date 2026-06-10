@@ -1,0 +1,98 @@
+You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.
+
+You have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.
+
+You are given the following architecture:
+
+
+import torch
+import torch.nn as nn
+
+class Model(nn.Module):
+    """
+    Simple model that performs a matrix-scalar multiplication (C = A * s)
+    """
+    def __init__(self):
+        super(Model, self).__init__()
+    
+    def forward(self, A: torch.Tensor, s: float) -> torch.Tensor:
+        """
+        Performs matrix-scalar multiplication.
+
+        Args:
+            A: Input matrix of shape (M, N)
+            s: Scalar value
+
+        Returns:
+            C: Resulting matrix of shape (M, N)
+        """
+        return A * s
+
+M = 16384 * 4
+N = 4096 * 4
+
+def get_inputs():
+    A = torch.rand(M, N)
+    s = 3.14
+    return [A, s]
+
+def get_init_inputs():
+    return []  # No special initialization inputs needed
+
+Note: The kernels should be optimized for FP32 (32-bit floating point) precision.
+
+Optimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!
+
+---
+Iterative refinement (turn 2). Your previous submission was tested on a GPU:
+
+turn=1
+compiled=True
+correctness=True
+runtime_ms=13.5
+ref_runtime_ms=13.3
+speedup=0.9852
+
+Previous submission:
+```python
+import torch
+import torch.nn as nn
+from torch.autograd import Function
+from torch.cuda.amp import custom_fwd, custom_bwd
+
+class MatrixScalarMulFunction(Function):
+    @staticmethod
+    @custom_fwd(cast_inputs=torch.float32)
+    def forward(ctx, A, s):
+        ctx.save_for_backward(A)
+        return A * s
+
+    @staticmethod
+    @custom_bwd
+    def backward(ctx, grad_output):
+        A, = ctx.saved_tensors
+        grad_A = grad_output.clone()
+        grad_s = torch.sum(grad_output * A, dim=(0, 1))
+        return grad_A, grad_s
+
+class ModelNew(nn.Module):
+    def __init__(self):
+        super(ModelNew, self).__init__()
+
+    def forward(self, A: torch.Tensor, s: float) -> torch.Tensor:
+        return MatrixScalarMulFunction.apply(A, s)
+
+M = 16384 * 4
+N = 4096 * 4
+
+def get_inputs():
+    A = torch.rand(M, N)
+    s = 3.14
+    return [A, s]
+
+def get_init_inputs():
+    return []  # No special initialization inputs needed
+```
+
+Fix all compilation and correctness errors. If the kernel is already correct but slow, improve performance.
+Output only the complete new ModelNew source in one ```python``` code block. No tests or extra text.

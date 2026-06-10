@@ -1,0 +1,127 @@
+You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.
+
+You have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.
+
+You are given the following architecture:
+
+
+import torch
+import torch.nn as nn
+
+class Model(nn.Module):
+    """
+    Model that performs a matrix multiplication, subtraction, multiplication, and ReLU activation.
+    """
+    def __init__(self, in_features, out_features, subtract_value, multiply_value):
+        super(Model, self).__init__()
+        self.linear = nn.Linear(in_features, out_features)
+        self.subtract_value = subtract_value
+        self.multiply_value = multiply_value
+
+    def forward(self, x):
+        x = self.linear(x)
+        x = x - self.subtract_value
+        x = x * self.multiply_value
+        x = torch.relu(x)
+        return x
+
+batch_size = 1024
+in_features = 8192
+out_features = 8192
+subtract_value = 2.0
+multiply_value = 1.5
+
+def get_inputs():
+    return [torch.rand(batch_size, in_features)]
+
+def get_init_inputs():
+    return [in_features, out_features, subtract_value, multiply_value]
+
+Note: The kernels should be optimized for FP32 (32-bit floating point) precision.
+
+Optimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!
+
+---
+Iterative refinement (turn 1). Your previous submission was tested on a GPU:
+
+turn=0
+compiled=False
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=-1.0
+compilation_error=save_for_backward can only save variables, but argument 2 is of type float
+
+Previous submission:
+```python
+import torch
+import torch.nn as nn
+from torch.autograd import Function
+from torch.cuda.amp import custom_fwd, custom_bwd
+
+class CustomMatMulSubtract(Function):
+    @staticmethod
+    @custom_fwd(cast_inputs=torch.float32)
+    def forward(ctx, input, weight, subtract_value):
+        ctx.save_for_backward(input, weight, subtract_value)
+        output = torch.matmul(input, weight) - subtract_value
+        return output
+
+    @staticmethod
+    @custom_bwd
+    def backward(ctx, grad_output):
+        input, weight, subtract_value = ctx.saved_tensors
+        grad_input = torch.matmul(grad_output, weight.t())
+        grad_weight = torch.matmul(input.t(), grad_output)
+        grad_subtract_value = torch.sum(grad_output, dim=0)
+        return grad_input, grad_weight, grad_subtract_value
+
+class CustomMultiplyReLU(Function):
+    @staticmethod
+    @custom_fwd(cast_inputs=torch.float32)
+    def forward(ctx, input, multiply_value):
+        ctx.save_for_backward(input, multiply_value)
+        output = input * multiply_value
+        ctx.output = output
+        return torch.relu(output)
+
+    @staticmethod
+    @custom_bwd
+    def backward(ctx, grad_output):
+        input, multiply_value = ctx.saved_tensors
+        grad_input = grad_output.clone()
+        mask = ctx.output > 0
+        grad_input[~mask] = 0
+        grad_input *= multiply_value
+        return grad_input, None
+
+class ModelNew(nn.Module):
+    """
+    Optimized Model using custom CUDA operators for matmul-subtract and multiply-relu.
+    """
+    def __init__(self, in_features, out_features, subtract_value, multiply_value):
+        super(ModelNew, self).__init__()
+        self.linear = nn.Linear(in_features, out_features)
+        self.subtract_value = subtract_value
+        self.multiply_value = multiply_value
+
+    def forward(self, x):
+        x = CustomMatMulSubtract.apply(x, self.linear.weight, self.subtract_value)
+        x = CustomMultiplyReLU.apply(x, self.multiply_value)
+        return x
+
+# Example usage:
+batch_size = 1024
+in_features = 8192
+out_features = 8192
+subtract_value = 2.0
+multiply_value = 1.5
+
+model_new = ModelNew(in_features, out_features, subtract_value, multiply_value)
+inputs = get_inputs()
+
+output = model_new(inputs[0])
+print(output.shape)
+```
+
+Fix all compilation and correctness errors. If the kernel is already correct but slow, improve performance.
+Output only the complete new ModelNew source in one ```python``` code block. No tests or extra text.

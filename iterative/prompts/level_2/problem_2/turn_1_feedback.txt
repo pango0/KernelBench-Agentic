@@ -1,0 +1,6 @@
+turn=1
+compiled=True
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=68.1
+runtime_error=Given transposed=1, weight of size [64, 64, 3, 3], expected bias to be 1-dimensional with 64 elements, but got bias of size [64, 1, 1] instead

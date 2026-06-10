@@ -1,0 +1,20 @@
+{
+  "run_name": "guided",
+  "level": 3,
+  "hardware": "V100_SXM2_32GB",
+  "total_count": 50,
+  "total_eval": 10,
+  "compiled_count": 6,
+  "correct_count": 2,
+  "compilation_rate": 0.6,
+  "correctness_rate": 0.2,
+  "geo_mean_speedup": NaN,
+  "fast_p": {
+    "0.0": 0.1,
+    "0.5": 0.1,
+    "0.8": 0.1,
+    "1.0": 0.0,
+    "1.5": 0.0,
+    "2.0": 0.0
+  }
+}

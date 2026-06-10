@@ -1,0 +1,531 @@
+{
+  "model_tag": "qwen",
+  "model_display": "Qwen2.5-Coder-7B-Instruct",
+  "model_kind": "local",
+  "method": "iterative",
+  "method_display": "Iterative",
+  "run_dir": "iterative",
+  "hardware": "V100_SXM2_32GB",
+  "levels": [
+    1,
+    2,
+    3
+  ],
+  "n_tasks": 30,
+  "overall": {
+    "compiled": 20,
+    "correct": 9,
+    "faster_than_baseline": 2,
+    "compilation_rate": 0.6666666666666666,
+    "correctness_rate": 0.3,
+    "fast_1_rate": 0.06666666666666667,
+    "geo_mean_speedup_correct": 0.9797720180451853
+  },
+  "per_level": {
+    "1": {
+      "total_eval": 10,
+      "compiled_count": 10,
+      "correct_count": 9,
+      "compilation_rate": 1.0,
+      "correctness_rate": 0.9,
+      "geo_mean_speedup": 0.9666693571294123,
+      "fast_p": {
+        "0.0": 0.9,
+        "0.5": 0.9,
+        "0.8": 0.9,
+        "1.0": 0.1,
+        "1.5": 0.0,
+        "2.0": 0.0
+      }
+    },
+    "2": {
+      "total_eval": 10,
+      "compiled_count": 6,
+      "correct_count": 0,
+      "compilation_rate": 0.6,
+      "correctness_rate": 0.0,
+      "geo_mean_speedup": 0.0,
+      "fast_p": {
+        "0.0": 0.0,
+        "0.5": 0.0,
+        "0.8": 0.0,
+        "1.0": 0.0,
+        "1.5": 0.0,
+        "2.0": 0.0
+      }
+    },
+    "3": {
+      "total_eval": 10,
+      "compiled_count": 4,
+      "correct_count": 0,
+      "compilation_rate": 0.4,
+      "correctness_rate": 0.0,
+      "geo_mean_speedup": 0.0,
+      "fast_p": {
+        "0.0": 0.0,
+        "0.5": 0.0,
+        "0.8": 0.0,
+        "1.0": 0.0,
+        "1.5": 0.0,
+        "2.0": 0.0
+      }
+    }
+  },
+  "error_taxonomy": {
+    "no_code": 0,
+    "compilation": 9,
+    "hallucinated_api": 3,
+    "memory": 1,
+    "shape_mismatch": 4,
+    "wrong_output": 4,
+    "runtime": 0,
+    "timeout": 0,
+    "slow": 7,
+    "unknown": 0
+  },
+  "per_problem": [
+    {
+      "level": 1,
+      "problem_id": "1",
+      "problem_name": "1_Square_matrix_multiplication_.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 9.62,
+      "ref_runtime_ms": 9.49,
+      "speedup": 0.9864864864864866,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "2",
+      "problem_name": "2_Standard_matrix_multiplication_.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 9.7,
+      "ref_runtime_ms": 9.35,
+      "speedup": 0.9639175257731959,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "3",
+      "problem_name": "3_Batched_matrix_multiplication.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 21.6,
+      "ref_runtime_ms": 21.0,
+      "speedup": 0.9722222222222222,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "4",
+      "problem_name": "4_Matrix_vector_multiplication_.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 10.6,
+      "speedup": null,
+      "category": "memory",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "5",
+      "problem_name": "5_Matrix_scalar_multiplication.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 11.0,
+      "ref_runtime_ms": 10.7,
+      "speedup": 0.9727272727272727,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "6",
+      "problem_name": "6_Matmul_with_large_K_dimension_.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 4.65,
+      "ref_runtime_ms": 4.64,
+      "speedup": 0.9978494623655912,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "7",
+      "problem_name": "7_Matmul_with_small_K_dimension_.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 10.6,
+      "ref_runtime_ms": 10.6,
+      "speedup": 1.0,
+      "category": "correct",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "8",
+      "problem_name": "8_Matmul_with_irregular_shapes_.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 20.3,
+      "ref_runtime_ms": 20.3,
+      "speedup": 1.0,
+      "category": "correct",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "9",
+      "problem_name": "9_Tall_skinny_matrix_multiplication_.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 6.61,
+      "ref_runtime_ms": 6.48,
+      "speedup": 0.9803328290468987,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 1,
+      "problem_id": "10",
+      "problem_name": "10_3D_tensor_matrix_multiplication.py",
+      "gen_status": "success",
+      "compiled": true,
+      "correct": true,
+      "runtime_ms": 3.69,
+      "ref_runtime_ms": 3.49,
+      "speedup": 0.94579945799458,
+      "category": "slow",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "1",
+      "problem_name": "1_Conv2D_ReLU_BiasAdd.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 24.3,
+      "speedup": null,
+      "category": "shape_mismatch",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "2",
+      "problem_name": "2_ConvTranspose2d_BiasAdd_Clamp_Scaling_Clamp_Divide.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "3",
+      "problem_name": "3_ConvTranspose3d_Sum_LayerNorm_AvgPool_GELU.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 43.9,
+      "speedup": null,
+      "category": "wrong_output",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "4",
+      "problem_name": "4_Conv2d_Mish_Mish.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 49.7,
+      "speedup": null,
+      "category": "shape_mismatch",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "5",
+      "problem_name": "5_ConvTranspose2d_Subtract_Tanh.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "6",
+      "problem_name": "6_Conv3d_Softmax_MaxPool_MaxPool.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 2.52,
+      "speedup": null,
+      "category": "shape_mismatch",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "7",
+      "problem_name": "7_Conv3d_ReLU_LeakyReLU_GELU_Sigmoid_BiasAdd.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 28.1,
+      "speedup": null,
+      "category": "hallucinated_api",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "8",
+      "problem_name": "8_Conv3d_Divide_Max_GlobalAvgPool_BiasAdd_Sum.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 16.2,
+      "speedup": null,
+      "category": "wrong_output",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "9",
+      "problem_name": "9_Matmul_Subtract_Multiply_ReLU.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 2,
+      "problem_id": "10",
+      "problem_name": "10_ConvTranspose2d_MaxPool_Hardtanh_Mean_Tanh.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "hallucinated_api",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "1",
+      "problem_name": "1_MLP.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "2",
+      "problem_name": "2_ShallowWideMLP.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 39.3,
+      "speedup": null,
+      "category": "shape_mismatch",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "3",
+      "problem_name": "3_DeepNarrowMLP.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "4",
+      "problem_name": "4_LeNet5.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 2.04,
+      "speedup": null,
+      "category": "wrong_output",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "5",
+      "problem_name": "5_AlexNet.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 107.0,
+      "speedup": null,
+      "category": "hallucinated_api",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "6",
+      "problem_name": "6_GoogleNetInceptionModule.py",
+      "gen_status": "best_effort",
+      "compiled": true,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": 39.4,
+      "speedup": null,
+      "category": "wrong_output",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "7",
+      "problem_name": "7_GoogleNetInceptionV1.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "8",
+      "problem_name": "8_ResNetBasicBlock.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "9",
+      "problem_name": "9_ResNet18.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    },
+    {
+      "level": 3,
+      "problem_id": "10",
+      "problem_name": "10_ResNet101.py",
+      "gen_status": "best_effort",
+      "compiled": false,
+      "correct": false,
+      "runtime_ms": -1.0,
+      "ref_runtime_ms": -1.0,
+      "speedup": null,
+      "category": "compilation",
+      "num_turns": 3
+    }
+  ],
+  "summarized_at": "2026-06-10T13:55:38.477975+00:00",
+  "gen_meta": {
+    "method": "iterative",
+    "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "max_turns": 3,
+    "created_at": "2026-06-10T13:37:17.866911+00:00",
+    "total_gpus": 8,
+    "gpus_per_worker": 2,
+    "num_workers": 4,
+    "worker_gpu_map": [
+      {
+        "worker_id": 0,
+        "cuda_visible_devices": "0,1",
+        "physical_gpu_ids": [
+          0,
+          1
+        ],
+        "llm_device_id": 0,
+        "eval_device_id": 1
+      },
+      {
+        "worker_id": 1,
+        "cuda_visible_devices": "2,3",
+        "physical_gpu_ids": [
+          2,
+          3
+        ],
+        "llm_device_id": 0,
+        "eval_device_id": 1
+      },
+      {
+        "worker_id": 2,
+        "cuda_visible_devices": "4,5",
+        "physical_gpu_ids": [
+          4,
+          5
+        ],
+        "llm_device_id": 0,
+        "eval_device_id": 1
+      },
+      {
+        "worker_id": 3,
+        "cuda_visible_devices": "6,7",
+        "physical_gpu_ids": [
+          6,
+          7
+        ],
+        "llm_device_id": 0,
+        "eval_device_id": 1
+      }
+    ],
+    "finished_at": "2026-06-10T13:51:47.608055+00:00"
+  }
+}

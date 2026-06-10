@@ -1,0 +1,5 @@
+turn=1
+compiled=False
+correctness=False
+error=torch.autograd.function.Function.apply is not a Module subclass
+runtime_error=torch.autograd.function.Function.apply is not a Module subclass

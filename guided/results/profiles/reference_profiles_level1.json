@@ -1,0 +1,264 @@
+{
+    "level1": {
+        "1_Square_matrix_multiplication_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 10.360327600000002,
+                    "cpu_time_ms": 0.33814740000000004,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 10.360327600000002,
+                    "cpu_time_ms": 0.3352452000000001,
+                    "self_cuda_time_ms": 10.360327600000002,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x32_sliced1x4_nn",
+                    "cuda_time_ms": 10.360327600000002,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.360327600000002,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 31.080982800000005
+        },
+        "2_Standard_matrix_multiplication_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 9.449287,
+                    "cpu_time_ms": 0.3340866,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 9.449287,
+                    "cpu_time_ms": 0.3313708,
+                    "self_cuda_time_ms": 9.449287,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x32_sliced1x4_nn",
+                    "cuda_time_ms": 9.449287,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 9.449287,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 28.347861
+        },
+        "3_Batched_matrix_multiplication.py": {
+            "top_ops": [
+                {
+                    "name": "aten::bmm",
+                    "cuda_time_ms": 20.660384799999996,
+                    "cpu_time_ms": 0.3238054,
+                    "self_cuda_time_ms": 20.660384799999996,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_32x128_nn",
+                    "cuda_time_ms": 20.660384799999996,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 20.660384799999996,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 41.32076959999999
+        },
+        "4_Matrix_vector_multiplication_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 10.319202999999998,
+                    "cpu_time_ms": 0.4423952000000001,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 10.319202999999998,
+                    "cpu_time_ms": 0.43963680000000005,
+                    "self_cuda_time_ms": 10.319202999999998,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void gemv2T_kernel_val<long, long, float, float, float, float, 128, 16, 2, 2, false, false, cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float> >(cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float>, float, float)",
+                    "cuda_time_ms": 10.3126302,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.3126302,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void splitKreduce_kernel<32, 16, int, float, float, float, float, true, false, false>(cublasSplitKParams<float>, float const*, float const*, float*, float const*, float const*, float const*, float const*, float*, void*, long, float*, int*)",
+                    "cuda_time_ms": 0.006572799999998824,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 0.006572799999998824,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 30.957608999999994
+        },
+        "5_Matrix_scalar_multiplication.py": {
+            "top_ops": [
+                {
+                    "name": "aten::mul",
+                    "cuda_time_ms": 10.431841600000002,
+                    "cpu_time_ms": 0.24626920000000002,
+                    "self_cuda_time_ms": 10.431841600000002,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 10.431841600000002,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.431841600000002,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 20.863683200000004
+        },
+        "6_Matmul_with_large_K_dimension_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 4.5381014,
+                    "cpu_time_ms": 0.3243884,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 4.5381014,
+                    "cpu_time_ms": 0.3214309999999999,
+                    "self_cuda_time_ms": 4.5381014,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x32_sliced1x4_nn",
+                    "cuda_time_ms": 4.5368406,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 4.5368406,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "Memset (Device)",
+                    "cuda_time_ms": 0.001260800000000063,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 0.001260800000000063,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 13.614304200000001
+        },
+        "7_Matmul_with_small_K_dimension_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 9.792030800000001,
+                    "cpu_time_ms": 0.45775239999999995,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 9.792030800000001,
+                    "cpu_time_ms": 0.4551048,
+                    "self_cuda_time_ms": 9.792030800000001,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x64_nn",
+                    "cuda_time_ms": 9.792030800000001,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 9.792030800000001,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 29.376092400000005
+        },
+        "8_Matmul_with_irregular_shapes_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 19.931492,
+                    "cpu_time_ms": 0.42065460000000005,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 19.931492,
+                    "cpu_time_ms": 0.41804220000000003,
+                    "self_cuda_time_ms": 19.931492,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x64_nn",
+                    "cuda_time_ms": 19.931492,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 19.931492,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 59.794475999999996
+        },
+        "9_Tall_skinny_matrix_multiplication_.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 5.7700282000000005,
+                    "cpu_time_ms": 0.25036479999999994,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 5.7700282000000005,
+                    "cpu_time_ms": 0.24820540000000002,
+                    "self_cuda_time_ms": 5.7700282000000005,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x64_nn",
+                    "cuda_time_ms": 5.7700282000000005,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 5.7700282000000005,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 17.310084600000003
+        },
+        "10_3D_tensor_matrix_multiplication.py": {
+            "top_ops": [
+                {
+                    "name": "aten::matmul",
+                    "cuda_time_ms": 3.7774414000000007,
+                    "cpu_time_ms": 0.2576322000000001,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mm",
+                    "cuda_time_ms": 3.7774414000000007,
+                    "cpu_time_ms": 0.24219399999999996,
+                    "self_cuda_time_ms": 3.7774414000000007,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x128_nn",
+                    "cuda_time_ms": 3.7774414000000007,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 3.7774414000000007,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 11.332324200000002
+        }
+    }
+}

@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments and secrets
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# CUDA / PyTorch extension build artifacts
+**/build/
+**/eval_cache/
+**/_build_cache/
+*.o
+*.o.d
+*.cuda.o
+*.ninja_log
+.ninja_deps
+
+# KernelBench runtime outputs (regenerable)
+KernelBench/cache/
+KernelBench/runs/
+KernelBench/logs/
+KernelBench/scratch/
+
+# Per-method legacy run artifacts
+zeroshot/build/
+guided/build/
+iterative/build/
+agentic/build/
+zeroshot/logs/
+guided/logs/
+iterative/logs/
+zeroshot/results.json
+guided/results.json
+iterative/results.json
+
+# SLURM / orchestration logs
+logs/
+experiments/logs/
+**/slurm-*.out
+**/slurm-*.err
+
+# Experiment run logs (summaries and gen_results are kept)
+experiments/runs/**/generate.log
+experiments/runs/**/eval.log
+
+# Model / dataset caches
+.cache/
+hf_cache/
+models--*/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Scratch / temp
+scratch/
+**/scratch/
+*.tmp
+uv.lock

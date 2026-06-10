@@ -1,0 +1,754 @@
+{
+    "level2": {
+        "1_Conv2D_ReLU_BiasAdd.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv2d",
+                    "cuda_time_ms": 19.341085,
+                    "cpu_time_ms": 0.2796216000000001,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 19.341085,
+                    "cpu_time_ms": 0.27493139999999994,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 19.341085,
+                    "cpu_time_ms": 0.269474,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution",
+                    "cuda_time_ms": 16.740276599999998,
+                    "cpu_time_ms": 0.23521539999999996,
+                    "self_cuda_time_ms": 16.740276599999998,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+                    "cuda_time_ms": 16.7357198,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 16.7357198,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 5.2027178,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 5.2027178,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add",
+                    "cuda_time_ms": 2.6019094000000007,
+                    "cpu_time_ms": 0.015192600000000039,
+                    "self_cuda_time_ms": 2.6019094000000007,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 2.6008083999999996,
+                    "cpu_time_ms": 0.01623620000000001,
+                    "self_cuda_time_ms": 2.6008083999999996,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::relu",
+                    "cuda_time_ms": 2.5288027999999976,
+                    "cpu_time_ms": 0.021084000000000012,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::clamp_min",
+                    "cuda_time_ms": 2.5288027999999976,
+                    "cpu_time_ms": 0.01630720000000001,
+                    "self_cuda_time_ms": 2.5288027999999976,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 109.49565219999998
+        },
+        "2_ConvTranspose2d_BiasAdd_Clamp_Scaling_Clamp_Divide.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv_transpose2d",
+                    "cuda_time_ms": 41.20272800000001,
+                    "cpu_time_ms": 0.3921893999999999,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 41.20272800000001,
+                    "cpu_time_ms": 0.38769599999999993,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 41.20272800000001,
+                    "cpu_time_ms": 0.3820904,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution_transpose",
+                    "cuda_time_ms": 35.8588778,
+                    "cpu_time_ms": 0.35005460000000005,
+                    "self_cuda_time_ms": 35.8588778,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void cudnn::detail::dgrad_engine<float, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_grad_params, unsigned long long, int, unsigned long long, int, float, int, int, int)",
+                    "cuda_time_ms": 33.189884,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 33.189884,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 10.697537599999995,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.697537599999995,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::clamp",
+                    "cuda_time_ms": 10.434768600000005,
+                    "cpu_time_ms": 0.031780600000000186,
+                    "self_cuda_time_ms": 10.434768600000005,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 10.434768600000005,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.434768600000005,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add",
+                    "cuda_time_ms": 5.353687399999991,
+                    "cpu_time_ms": 0.015734599999999863,
+                    "self_cuda_time_ms": 5.353687399999991,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 5.343850200000005,
+                    "cpu_time_ms": 0.016617600000000128,
+                    "self_cuda_time_ms": 5.343850200000005,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 258.45761999999996
+        },
+        "3_ConvTranspose3d_Sum_LayerNorm_AvgPool_GELU.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv_transpose3d",
+                    "cuda_time_ms": 26.504106000000007,
+                    "cpu_time_ms": 0.3899194,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 26.504106000000007,
+                    "cpu_time_ms": 0.3862478,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 26.504106000000007,
+                    "cpu_time_ms": 0.3800744,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution_transpose",
+                    "cuda_time_ms": 23.83108000000001,
+                    "cpu_time_ms": 0.3491918,
+                    "self_cuda_time_ms": 23.83108000000001,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void convolveNd_dgrad_float_engine<float, 3, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_gradNd_params, unsigned long long, int, unsigned long long, int, float, int)",
+                    "cuda_time_ms": 22.581331000000006,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 22.581331000000006,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::layer_norm",
+                    "cuda_time_ms": 13.117573999999994,
+                    "cpu_time_ms": 0.04170499999999998,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::native_layer_norm",
+                    "cuda_time_ms": 13.117573999999994,
+                    "cpu_time_ms": 0.03733260000000001,
+                    "self_cuda_time_ms": 13.117573999999994,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::(anonymous namespace)::vectorized_layer_norm_kernel<float, float>(int, float, float const*, float const*, float const*, float*, float*, float*)",
+                    "cuda_time_ms": 13.117573999999994,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 13.117573999999994,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 5.337226800000002,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 5.337226800000002,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 2.6730259999999992,
+                    "cpu_time_ms": 0.01614939999999992,
+                    "self_cuda_time_ms": 2.6730259999999992,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 181.28595680000004
+        },
+        "4_Conv2d_Mish_Mish.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv2d",
+                    "cuda_time_ms": 39.14816439999999,
+                    "cpu_time_ms": 0.516808,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 39.14816439999999,
+                    "cpu_time_ms": 0.5130688000000001,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 39.14816439999999,
+                    "cpu_time_ms": 0.5070054,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution",
+                    "cuda_time_ms": 33.881848399999996,
+                    "cpu_time_ms": 0.47412900000000013,
+                    "self_cuda_time_ms": 33.881848399999996,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_64x64_nn",
+                    "cuda_time_ms": 13.50390139999999,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 13.50390139999999,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void cudnn::winograd_nonfused::winogradForwardOutput4x4<float, float>(cudnn::winograd_nonfused::WinogradOutputParams<float, float>)",
+                    "cuda_time_ms": 12.762493599999999,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 12.762493599999999,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mish",
+                    "cuda_time_ms": 10.273664,
+                    "cpu_time_ms": 0.027420200000000207,
+                    "self_cuda_time_ms": 10.273664,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::mish_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::mish_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 10.273664,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.273664,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void cudnn::winograd_nonfused::winogradForwardData4x4<float, float>(cudnn::winograd_nonfused::WinogradDataParams<float, float>)",
+                    "cuda_time_ms": 7.6113957999999995,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 7.6113957999999995,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 5.266315999999998,
+                    "cpu_time_ms": 0.016337399999999887,
+                    "self_cuda_time_ms": 5.266315999999998,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 216.28814999999994
+        },
+        "5_ConvTranspose2d_Subtract_Tanh.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv_transpose2d",
+                    "cuda_time_ms": 75.01462680000006,
+                    "cpu_time_ms": 1.6986612,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 75.01462680000006,
+                    "cpu_time_ms": 1.6943493999999997,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 75.01462680000006,
+                    "cpu_time_ms": 1.6877205999999998,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution_transpose",
+                    "cuda_time_ms": 69.64248220000007,
+                    "cpu_time_ms": 1.6406886,
+                    "self_cuda_time_ms": 69.64248220000007,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void fft2d_c2r_32x32<float, false, false, 0u, false, false>(float*, float2 const*, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, bool, float*, float*, int2, cudnnActivationStruct, int, int)",
+                    "cuda_time_ms": 32.311170799999985,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 32.311170799999985,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_gcgemm_64x32_nt",
+                    "cuda_time_ms": 17.84228100000003,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 17.84228100000003,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 10.758637999999994,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 10.758637999999994,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void foldedNchwToNchwKernel<float, float, float, true, (cudnnKernelDataType_t)0>(int, int, int, int, int, int, int, float const*, float*, int, int, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, cudnn::reduced_divisor, cudnn::reduced_divisor, cudnn::reduced_divisor, cudnn::reduced_divisor)",
+                    "cuda_time_ms": 8.708742399999995,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 8.708742399999995,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void fft2d_r2c_32x32<float, false, 0u, false>(float2*, float const*, int, int, int, int, int, int, int, int, int, cudnn::reduced_divisor, bool, int2, int, int)",
+                    "cuda_time_ms": 6.215752200000068,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 6.215752200000068,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::sub",
+                    "cuda_time_ms": 5.386493399999997,
+                    "cpu_time_ms": 0.02524860000000017,
+                    "self_cuda_time_ms": 5.386493399999997,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 396.34707120000036
+        },
+        "6_Conv3d_Softmax_MaxPool_MaxPool.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv3d",
+                    "cuda_time_ms": 1.5356838000000006,
+                    "cpu_time_ms": 0.48567479999999996,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 1.5356838000000006,
+                    "cpu_time_ms": 0.4798737999999999,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 1.5356838000000006,
+                    "cpu_time_ms": 0.474832,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution",
+                    "cuda_time_ms": 1.2739648000000003,
+                    "cpu_time_ms": 0.4434152000000001,
+                    "self_cuda_time_ms": 1.2739648000000003,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool)",
+                    "cuda_time_ms": 1.2739648000000003,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 1.2739648000000003,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::softmax",
+                    "cuda_time_ms": 0.6591294000000002,
+                    "cpu_time_ms": 0.02096220000000003,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_softmax",
+                    "cuda_time_ms": 0.6591294000000002,
+                    "cpu_time_ms": 0.018654600000000028,
+                    "self_cuda_time_ms": 0.6591294000000002,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::(anonymous namespace)::cunn_SpatialSoftMaxForward<float, float, float, int, at::native::(anonymous namespace)::SoftMaxForwardEpilogue>(float*, float const*, int, int, int)",
+                    "cuda_time_ms": 0.6591294000000002,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 0.6591294000000002,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::max_pool3d",
+                    "cuda_time_ms": 0.3323358,
+                    "cpu_time_ms": 0.06512379999999994,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::max_pool3d_with_indices",
+                    "cuda_time_ms": 0.3323358,
+                    "cpu_time_ms": 0.05964759999999997,
+                    "self_cuda_time_ms": 0.3323358,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 10.652814599999997
+        },
+        "7_Conv3d_ReLU_LeakyReLU_GELU_Sigmoid_BiasAdd.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv3d",
+                    "cuda_time_ms": 16.719749,
+                    "cpu_time_ms": 0.4895022000000001,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 16.719749,
+                    "cpu_time_ms": 0.4854306000000002,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 16.719749,
+                    "cpu_time_ms": 0.4801004000000001,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution",
+                    "cuda_time_ms": 14.364192399999999,
+                    "cpu_time_ms": 0.4487058000000001,
+                    "self_cuda_time_ms": 14.364192399999999,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool)",
+                    "cuda_time_ms": 14.364192399999999,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 14.364192399999999,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 4.719331200000001,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 4.719331200000001,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add",
+                    "cuda_time_ms": 2.3637746000000015,
+                    "cpu_time_ms": 0.01630160000000005,
+                    "self_cuda_time_ms": 2.3637746000000015,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 2.3555566,
+                    "cpu_time_ms": 0.015672799999999914,
+                    "self_cuda_time_ms": 2.3555566,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::gelu",
+                    "cuda_time_ms": 2.2974897999999992,
+                    "cpu_time_ms": 0.013810599999999975,
+                    "self_cuda_time_ms": 2.2974897999999992,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::GeluCUDAKernelImpl(at::TensorIteratorBase&, at::native::GeluType)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::GeluCUDAKernelImpl(at::TensorIteratorBase&, at::native::GeluType)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 2.2974897999999992,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 2.2974897999999992,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 108.99600579999993
+        },
+        "8_Conv3d_Divide_Max_GlobalAvgPool_BiasAdd_Sum.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv3d",
+                    "cuda_time_ms": 14.213087199999995,
+                    "cpu_time_ms": 0.49382900000000013,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 14.213087199999995,
+                    "cpu_time_ms": 0.4898155999999999,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 14.213087199999995,
+                    "cpu_time_ms": 0.4831886000000002,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution",
+                    "cuda_time_ms": 13.111170199999995,
+                    "cpu_time_ms": 0.4483248000000001,
+                    "self_cuda_time_ms": 13.111170199999995,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool)",
+                    "cuda_time_ms": 13.111170199999995,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 13.111170199999995,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 1.1047583999999988,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 1.1047583999999988,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 1.1019169999999976,
+                    "cpu_time_ms": 0.016841199999999935,
+                    "self_cuda_time_ms": 1.1019169999999976,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::div",
+                    "cuda_time_ms": 1.0735332000000017,
+                    "cpu_time_ms": 0.018673599999999988,
+                    "self_cuda_time_ms": 1.0735332000000017,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::BUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::BUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 1.0735332000000017,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 1.0735332000000017,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::max_pool3d",
+                    "cuda_time_ms": 0.8910195999999967,
+                    "cpu_time_ms": 0.040344599999999994,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 76.13727739999993
+        },
+        "9_Matmul_Subtract_Multiply_ReLU.py": {
+            "top_ops": [
+                {
+                    "name": "aten::linear",
+                    "cuda_time_ms": 9.467703400000001,
+                    "cpu_time_ms": 0.2871204,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::addmm",
+                    "cuda_time_ms": 9.467703400000001,
+                    "cpu_time_ms": 0.27036960000000004,
+                    "self_cuda_time_ms": 9.467703400000001,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "volta_sgemm_128x64_tn",
+                    "cuda_time_ms": 9.4660586,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 9.4660586,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::relu",
+                    "cuda_time_ms": 0.08397380000000157,
+                    "cpu_time_ms": 0.018844199999999957,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::clamp_min",
+                    "cuda_time_ms": 0.08397380000000157,
+                    "cpu_time_ms": 0.01382460000000001,
+                    "self_cuda_time_ms": 0.08397380000000157,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 0.08397380000000157,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 0.08397380000000157,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::mul",
+                    "cuda_time_ms": 0.0837884000000009,
+                    "cpu_time_ms": 0.015779400000000034,
+                    "self_cuda_time_ms": 0.0837884000000009,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 0.0837884000000009,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 0.0837884000000009,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::sub",
+                    "cuda_time_ms": 0.08340399999999863,
+                    "cpu_time_ms": 0.01959280000000008,
+                    "self_cuda_time_ms": 0.08340399999999863,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctorOnSelf_add<float>, at::detail::Array<char*, 2> >(int, at::native::CUDAFunctorOnSelf_add<float>, at::detail::Array<char*, 2>)",
+                    "cuda_time_ms": 0.08340399999999863,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 0.08340399999999863,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 28.989416400000007
+        },
+        "10_ConvTranspose2d_MaxPool_Hardtanh_Mean_Tanh.py": {
+            "top_ops": [
+                {
+                    "name": "aten::conv_transpose2d",
+                    "cuda_time_ms": 33.08976019999999,
+                    "cpu_time_ms": 0.502157,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::convolution",
+                    "cuda_time_ms": 33.08976019999999,
+                    "cpu_time_ms": 0.4980968,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::_convolution",
+                    "cuda_time_ms": 33.08976019999999,
+                    "cpu_time_ms": 0.49207399999999996,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::cudnn_convolution_transpose",
+                    "cuda_time_ms": 27.719401400000002,
+                    "cpu_time_ms": 0.4597889999999999,
+                    "self_cuda_time_ms": 27.719401400000002,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+                    "cuda_time_ms": 27.716463800000003,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 27.716463800000003,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::add_",
+                    "cuda_time_ms": 5.370358799999994,
+                    "cpu_time_ms": 0.01671119999999992,
+                    "self_cuda_time_ms": 5.370358799999994,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+                    "cuda_time_ms": 5.370358799999994,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 5.370358799999994,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::max_pool2d",
+                    "cuda_time_ms": 4.799330200000003,
+                    "cpu_time_ms": 0.02481680000000006,
+                    "self_cuda_time_ms": 0.0,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "aten::max_pool2d_with_indices",
+                    "cuda_time_ms": 4.799330200000003,
+                    "cpu_time_ms": 0.021108400000000076,
+                    "self_cuda_time_ms": 4.799330200000003,
+                    "cuda_memory_usage_mb": 0.0
+                },
+                {
+                    "name": "void at::native::(anonymous namespace)::max_pool_forward_nchw<float>(int, float const*, long, long, long, int, int, int, int, int, int, int, int, int, int, float*, long*)",
+                    "cuda_time_ms": 4.799330200000003,
+                    "cpu_time_ms": 0.0,
+                    "self_cuda_time_ms": 4.799330200000003,
+                    "cuda_memory_usage_mb": 0.0
+                }
+            ],
+            "total_cuda_time_ms": 186.321998
+        }
+    }
+}

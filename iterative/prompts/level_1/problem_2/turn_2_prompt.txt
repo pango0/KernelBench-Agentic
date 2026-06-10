@@ -1,0 +1,136 @@
+You previously generated a CUDA kernel implementation (refinement turn 2).
+
+Original task:
+You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.
+
+You have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.
+
+You are given the following architecture:
+
+
+import torch
+import torch.nn as nn
+
+class Model(nn.Module):
+    """
+    Simple model that performs a single matrix multiplication (C = A * B)
+    """
+    def __init__(self):
+        super(Model, self).__init__()
+    
+    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
+        """
+        Performs matrix multiplication.
+
+        Args:
+            A: Input tensor of shape (M, K).
+            B: Input tensor of shape (K, N).
+
+        Returns:
+            Output tensor of shape (M, N).
+        """
+        return torch.matmul(A, B)
+
+M = 1024 * 2
+K = 4096 * 2
+N = 2048 * 2
+
+def get_inputs():
+    A = torch.rand(M, K)
+    B = torch.rand(K, N)
+    return [A, B]
+
+def get_init_inputs():
+    return []  # No special initialization inputs needed
+
+Note: The kernels should be optimized for FP32 (32-bit floating point) precision.
+
+Optimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!
+
+
+Previous implementation:
+```python
+import torch
+import torch.nn as nn
+from torch.autograd import Function
+from torch.cuda.amp import custom_fwd, custom_bwd
+
+class MatMulCUDA(Function):
+    @staticmethod
+    @custom_fwd(cast_inputs=torch.float32)
+    def forward(ctx, A, B):
+        M, K = A.shape
+        K, N = B.shape
+        C = torch.zeros((M, N), device=A.device, dtype=torch.float32)
+        torch.cuda.synchronize()
+        start_time = torch.cuda.Event(enable_timing=True)
+        end_time = torch.cuda.Event(enable_timing=True)
+        start_time.record()
+        torch.matmul(A, B, out=C)
+        end_time.record()
+        torch.cuda.synchronize()
+        ctx.elapsed_time = start_time.elapsed_time(end_time)
+        ctx.save_for_backward(A, B)
+        return C
+
+    @staticmethod
+    @custom_bwd
+    def backward(ctx, grad_output):
+        A, B = ctx.saved_tensors
+        grad_A = None
+        grad_B = None
+        if ctx.needs_input_grad[0]:
+            grad_A = torch.matmul(grad_output, B.t())
+        if ctx.needs_input_grad[1]:
+            grad_B = torch.matmul(A.t(), grad_output)
+        return grad_A, grad_B
+
+class ModelNew(nn.Module):
+    """
+    Optimized model using custom CUDA operators for matrix multiplication.
+    """
+    def __init__(self):
+        super(ModelNew, self).__init__()
+
+    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
+        """
+        Performs matrix multiplication using custom CUDA operator.
+
+        Args:
+            A: Input tensor of shape (M, K).
+            B: Input tensor of shape (K, N).
+
+        Returns:
+            Output tensor of shape (M, N).
+        """
+        return MatMulCUDA.apply(A, B)
+
+# Example usage
+M = 1024 * 2
+K = 4096 * 2
+N = 2048 * 2
+
+def get_inputs():
+    A = torch.rand(M, K)
+    B = torch.rand(K, N)
+    return [A, B]
+
+def get_init_inputs():
+    return []  # No special initialization inputs needed
+```
+
+Evaluation feedback:
+turn=1
+compiled=True
+correctness=True
+runtime_ms=10.5
+ref_runtime_ms=9.83
+speedup=0.9362
+
+Please improve the implementation.
+
+Requirements:
+- Output ONLY valid Python code in a ```python``` block
+- Define ModelNew
+- Preserve correctness
+- Optimize performance

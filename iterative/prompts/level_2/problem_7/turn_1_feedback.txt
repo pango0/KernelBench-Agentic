@@ -1,0 +1,6 @@
+turn=1
+compiled=True
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=28.6
+runtime_error=Given weight of size [32, 8, 3, 3, 3], expected bias to be 1-dimensional with 32 elements, but got bias of size [32, 1, 1, 1] instead

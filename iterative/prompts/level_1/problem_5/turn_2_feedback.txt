@@ -1,0 +1,6 @@
+turn=2
+compiled=False
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=-1.0
+compilation_error=Could not get qualified name for class '_matrix_scalar_mul_cuda_forward': __module__ can't be None.

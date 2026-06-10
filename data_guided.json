@@ -1,0 +1,1941 @@
+{
+  "meta": {
+    "source": "local",
+    "prompt_option": "profiling_guided",
+    "backend": "cuda",
+    "precision": "fp32",
+    "problem_id_range": [
+      1,
+      10
+    ],
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "profiling_source": "reference_torch_profiler"
+  },
+  "levels": {
+    "1": {
+      "1": {
+        "problem_id": 1,
+        "problem_name": "1_Square_matrix_multiplication_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/1_Square_matrix_multiplication_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a single square matrix multiplication (C = A * B)\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs the matrix multiplication.\n\n        Args:\n            A (torch.Tensor): Input matrix A of shape (N, N).\n            B (torch.Tensor): Input matrix B of shape (N, N).\n\n        Returns:\n            torch.Tensor: Output matrix C of shape (N, N).\n        \"\"\"\n        return torch.matmul(A, B)\n\nN = 2048 * 2\n\ndef get_inputs():\n    A = torch.rand(N, N)\n    B = torch.rand(N, N)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 31.08 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 10.360 ms\n  2. aten::mm: 10.360 ms\n  3. volta_sgemm_128x32_sliced1x4_nn: 10.360 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 10.360327600000002,
+              "cpu_time_ms": 0.33814740000000004,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 10.360327600000002,
+              "cpu_time_ms": 0.3352452000000001,
+              "self_cuda_time_ms": 10.360327600000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x32_sliced1x4_nn",
+              "cuda_time_ms": 10.360327600000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.360327600000002,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 31.080982800000005
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 31.08 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 10.360 ms\n  2. aten::mm: 10.360 ms\n  3. volta_sgemm_128x32_sliced1x4_nn: 10.360 ms"
+      },
+      "2": {
+        "problem_id": 2,
+        "problem_name": "2_Standard_matrix_multiplication_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/2_Standard_matrix_multiplication_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a single matrix multiplication (C = A * B)\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs matrix multiplication.\n\n        Args:\n            A: Input tensor of shape (M, K).\n            B: Input tensor of shape (K, N).\n\n        Returns:\n            Output tensor of shape (M, N).\n        \"\"\"\n        return torch.matmul(A, B)\n\nM = 1024 * 2\nK = 4096 * 2\nN = 2048 * 2\n\ndef get_inputs():\n    A = torch.rand(M, K)\n    B = torch.rand(K, N)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 28.35 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 9.449 ms\n  2. aten::mm: 9.449 ms\n  3. volta_sgemm_128x32_sliced1x4_nn: 9.449 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 9.449287,
+              "cpu_time_ms": 0.3340866,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 9.449287,
+              "cpu_time_ms": 0.3313708,
+              "self_cuda_time_ms": 9.449287,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x32_sliced1x4_nn",
+              "cuda_time_ms": 9.449287,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 9.449287,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 28.347861
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 28.35 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 9.449 ms\n  2. aten::mm: 9.449 ms\n  3. volta_sgemm_128x32_sliced1x4_nn: 9.449 ms"
+      },
+      "3": {
+        "problem_id": 3,
+        "problem_name": "3_Batched_matrix_multiplication.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/3_Batched_matrix_multiplication.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Performs batched matrix multiplication (C = A * B) where A, B, and C have the same batch dimension.\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs batched matrix multiplication.\n\n        Args:\n            A: Input tensor of shape (batch_size, m, k).\n            B: Input tensor of shape (batch_size, k, n).\n\n        Returns:\n            C: Output tensor of shape (batch_size, m, n).\n        \"\"\"\n        return torch.bmm(A, B)\n\nbatch_size = 128\nm = 128 * 4\nk = 256 * 4\nn = 512 * 4\n\ndef get_inputs():\n    A = torch.rand(batch_size, m, k)\n    B = torch.rand(batch_size, k, n)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 41.32 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::bmm: 20.660 ms\n  2. volta_sgemm_32x128_nn: 20.660 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::bmm",
+              "cuda_time_ms": 20.660384799999996,
+              "cpu_time_ms": 0.3238054,
+              "self_cuda_time_ms": 20.660384799999996,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_32x128_nn",
+              "cuda_time_ms": 20.660384799999996,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 20.660384799999996,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 41.32076959999999
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 41.32 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::bmm: 20.660 ms\n  2. volta_sgemm_32x128_nn: 20.660 ms"
+      },
+      "4": {
+        "problem_id": 4,
+        "problem_name": "4_Matrix_vector_multiplication_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/4_Matrix_vector_multiplication_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs matrix-vector multiplication (C = A * B).\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs matrix-vector multiplication.\n\n        Args:\n            A: Input matrix of shape (M, K).\n            B: Input vector of shape (K, 1).\n\n        Returns:\n            Output vector of shape (M, 1).\n        \"\"\"\n        return torch.matmul(A, B)\n\nM = 256 * 8 # 2048\nK = 131072 * 8 # 1048576\n\ndef get_inputs():\n    A = torch.rand(M, K)\n    B = torch.rand(K, 1)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 30.96 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 10.319 ms\n  2. aten::mm: 10.319 ms\n  3. void gemv2T_kernel_val<long, long, float, float, float, float, 128, 16, 2, 2, false, false, cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float> >(cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float>, float, float): 10.313 ms\n  4. void splitKreduce_kernel<32, 16, int, float, float, float, float, true, false, false>(cublasSplitKParams<float>, float const*, float const*, float*, float const*, float const*, float const*, float const*, float*, void*, long, float*, int*): 0.007 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 10.319202999999998,
+              "cpu_time_ms": 0.4423952000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 10.319202999999998,
+              "cpu_time_ms": 0.43963680000000005,
+              "self_cuda_time_ms": 10.319202999999998,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void gemv2T_kernel_val<long, long, float, float, float, float, 128, 16, 2, 2, false, false, cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float> >(cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float>, float, float)",
+              "cuda_time_ms": 10.3126302,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.3126302,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void splitKreduce_kernel<32, 16, int, float, float, float, float, true, false, false>(cublasSplitKParams<float>, float const*, float const*, float*, float const*, float const*, float const*, float const*, float*, void*, long, float*, int*)",
+              "cuda_time_ms": 0.006572799999998824,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.006572799999998824,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 30.957608999999994
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 30.96 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 10.319 ms\n  2. aten::mm: 10.319 ms\n  3. void gemv2T_kernel_val<long, long, float, float, float, float, 128, 16, 2, 2, false, false, cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float> >(cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float>, float>, float, float): 10.313 ms\n  4. void splitKreduce_kernel<32, 16, int, float, float, float, float, true, false, false>(cublasSplitKParams<float>, float const*, float const*, float*, float const*, float const*, float const*, float const*, float*, void*, long, float*, int*): 0.007 ms"
+      },
+      "5": {
+        "problem_id": 5,
+        "problem_name": "5_Matrix_scalar_multiplication.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/5_Matrix_scalar_multiplication.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a matrix-scalar multiplication (C = A * s)\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, s: float) -> torch.Tensor:\n        \"\"\"\n        Performs matrix-scalar multiplication.\n\n        Args:\n            A: Input matrix of shape (M, N)\n            s: Scalar value\n\n        Returns:\n            C: Resulting matrix of shape (M, N)\n        \"\"\"\n        return A * s\n\nM = 16384 * 4\nN = 4096 * 4\n\ndef get_inputs():\n    A = torch.rand(M, N)\n    s = 3.14\n    return [A, s]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 20.86 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::mul: 10.432 ms\n  2. void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>): 10.432 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::mul",
+              "cuda_time_ms": 10.431841600000002,
+              "cpu_time_ms": 0.24626920000000002,
+              "self_cuda_time_ms": 10.431841600000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 10.431841600000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.431841600000002,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 20.863683200000004
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 20.86 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::mul: 10.432 ms\n  2. void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>): 10.432 ms"
+      },
+      "6": {
+        "problem_id": 6,
+        "problem_name": "6_Matmul_with_large_K_dimension_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/6_Matmul_with_large_K_dimension_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a single matrix multiplication (C = A * B) with a large K dimension\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs matrix multiplication of A and B.\n\n        Args:\n            A: Input tensor of shape (M, K)\n            B: Input tensor of shape (K, N)\n\n        Returns:\n            Output tensor of shape (M, N)\n        \"\"\"\n        return torch.matmul(A, B)\n\nM = 256\nN = 256\nK = 131072 * 4\n\ndef get_inputs():\n    A = torch.rand(M, K)\n    B = torch.rand(K, N)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 13.61 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 4.538 ms\n  2. aten::mm: 4.538 ms\n  3. volta_sgemm_128x32_sliced1x4_nn: 4.537 ms\n  4. Memset (Device): 0.001 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 4.5381014,
+              "cpu_time_ms": 0.3243884,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 4.5381014,
+              "cpu_time_ms": 0.3214309999999999,
+              "self_cuda_time_ms": 4.5381014,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x32_sliced1x4_nn",
+              "cuda_time_ms": 4.5368406,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 4.5368406,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "Memset (Device)",
+              "cuda_time_ms": 0.001260800000000063,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.001260800000000063,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 13.614304200000001
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 13.61 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 4.538 ms\n  2. aten::mm: 4.538 ms\n  3. volta_sgemm_128x32_sliced1x4_nn: 4.537 ms\n  4. Memset (Device): 0.001 ms"
+      },
+      "7": {
+        "problem_id": 7,
+        "problem_name": "7_Matmul_with_small_K_dimension_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/7_Matmul_with_small_K_dimension_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a single matrix multiplication (C = A * B) with a small K dimension\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs matrix multiplication.\n\n        Args:\n            A: Input tensor of shape (M, K).\n            B: Input tensor of shape (K, N).\n\n        Returns:\n            Output tensor of shape (M, N).\n        \"\"\"\n        return torch.matmul(A, B)\n\nM = 16384 * 2\nN = 16384 * 2\nK = 32 * 2\n\ndef get_inputs():\n    A = torch.rand(M, K)\n    B = torch.rand(K, N)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 29.38 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 9.792 ms\n  2. aten::mm: 9.792 ms\n  3. volta_sgemm_128x64_nn: 9.792 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 9.792030800000001,
+              "cpu_time_ms": 0.45775239999999995,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 9.792030800000001,
+              "cpu_time_ms": 0.4551048,
+              "self_cuda_time_ms": 9.792030800000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x64_nn",
+              "cuda_time_ms": 9.792030800000001,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 9.792030800000001,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 29.376092400000005
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 29.38 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 9.792 ms\n  2. aten::mm: 9.792 ms\n  3. volta_sgemm_128x64_nn: 9.792 ms"
+      },
+      "8": {
+        "problem_id": 8,
+        "problem_name": "8_Matmul_with_irregular_shapes_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/8_Matmul_with_irregular_shapes_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a single matrix multiplication (C = A * B) with irregular shapes\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:\n        \"\"\"\n        Performs matrix multiplication of A and B.\n\n        Args:\n            A: Input tensor with shape (M, K).\n            B: Input tensor with shape (K, N).\n\n        Returns:\n            C: Output tensor with shape (M, N).\n        \"\"\"\n        return torch.matmul(A, B)\n\nM = 8205\nK = 2949\nN = 5921\n\ndef get_inputs():\n    A = torch.rand(M, K)\n    B = torch.rand(K, N)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 59.79 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 19.931 ms\n  2. aten::mm: 19.931 ms\n  3. volta_sgemm_128x64_nn: 19.931 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 19.931492,
+              "cpu_time_ms": 0.42065460000000005,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 19.931492,
+              "cpu_time_ms": 0.41804220000000003,
+              "self_cuda_time_ms": 19.931492,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x64_nn",
+              "cuda_time_ms": 19.931492,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 19.931492,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 59.794475999999996
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 59.79 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 19.931 ms\n  2. aten::mm: 19.931 ms\n  3. volta_sgemm_128x64_nn: 19.931 ms"
+      },
+      "9": {
+        "problem_id": 9,
+        "problem_name": "9_Tall_skinny_matrix_multiplication_.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/9_Tall_skinny_matrix_multiplication_.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a single matrix multiplication (C = A * B) where one of the matrices is tall and skinny (M >> N or N >> M)\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A, B):\n        \"\"\"\n        Performs the matrix multiplication.\n\n        Args:\n            A (torch.Tensor): Input matrix of shape (M, K) or (K, M) where M >> N or N >> M.\n            B (torch.Tensor): Input matrix of shape (K, N) or (N, K) where M >> N or N >> M.\n\n        Returns:\n            torch.Tensor: Output matrix of shape (M, N) or (N, M)\n        \"\"\"\n        return torch.matmul(A, B)\n\nM = 16384 * 2\nN = 16 * 2\n\ndef get_inputs():\n    A = torch.rand(M, N)\n    B = torch.rand(N, M)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 17.31 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 5.770 ms\n  2. aten::mm: 5.770 ms\n  3. volta_sgemm_128x64_nn: 5.770 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 5.7700282000000005,
+              "cpu_time_ms": 0.25036479999999994,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 5.7700282000000005,
+              "cpu_time_ms": 0.24820540000000002,
+              "self_cuda_time_ms": 5.7700282000000005,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x64_nn",
+              "cuda_time_ms": 5.7700282000000005,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 5.7700282000000005,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 17.310084600000003
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 17.31 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 5.770 ms\n  2. aten::mm: 5.770 ms\n  3. volta_sgemm_128x64_nn: 5.770 ms"
+      },
+      "10": {
+        "problem_id": 10,
+        "problem_name": "10_3D_tensor_matrix_multiplication.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level1/10_3D_tensor_matrix_multiplication.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Performs 3D tensor-matrix multiplication.\n    \"\"\"\n    def __init__(self):\n        super(Model, self).__init__()\n    \n    def forward(self, A, B):\n        \"\"\"\n        Performs 3D tensor-matrix multiplication.\n\n        Args:\n            A (torch.Tensor): Input 3D tensor of shape (N, M, K).\n            B (torch.Tensor): Input matrix of shape (K, L).\n\n        Returns:\n            torch.Tensor: Output tensor of shape (N, M, L), resulting from the multiplication of A and B along the last dimension of A.\n        \"\"\"\n        return torch.matmul(A, B)\n\nN = 16\nM = 1024\nK = 2048\nL = 768\n\ndef get_inputs():\n    A = torch.rand(N, M, K)\n    B = torch.rand(K, L)\n    return [A, B]\n\ndef get_init_inputs():\n    return []  # No special initialization inputs needed\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 11.33 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 3.777 ms\n  2. aten::mm: 3.777 ms\n  3. volta_sgemm_128x128_nn: 3.777 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::matmul",
+              "cuda_time_ms": 3.7774414000000007,
+              "cpu_time_ms": 0.2576322000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mm",
+              "cuda_time_ms": 3.7774414000000007,
+              "cpu_time_ms": 0.24219399999999996,
+              "self_cuda_time_ms": 3.7774414000000007,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x128_nn",
+              "cuda_time_ms": 3.7774414000000007,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 3.7774414000000007,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 11.332324200000002
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 11.33 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::matmul: 3.777 ms\n  2. aten::mm: 3.777 ms\n  3. volta_sgemm_128x128_nn: 3.777 ms"
+      }
+    },
+    "2": {
+      "1": {
+        "problem_id": 1,
+        "problem_name": "1_Conv2D_ReLU_BiasAdd.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/1_Conv2D_ReLU_BiasAdd.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a convolution, applies ReLU, and adds a bias term.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, bias_shape):\n        super(Model, self).__init__()\n        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size)\n        self.bias = nn.Parameter(torch.randn(bias_shape)) \n\n    def forward(self, x):\n        x = self.conv(x)\n        x = torch.relu(x)\n        x = x + self.bias\n        return x\n\nbatch_size = 128\nin_channels  = 64  \nout_channels = 128  \nheight = width = 128\nkernel_size = 3\nbias_shape = (out_channels, 1, 1)\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, bias_shape]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 109.50 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 19.341 ms\n  2. aten::convolution: 19.341 ms\n  3. aten::_convolution: 19.341 ms\n  4. aten::cudnn_convolution: 16.740 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 16.736 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 5.203 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 19.341085,
+              "cpu_time_ms": 0.2796216000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 19.341085,
+              "cpu_time_ms": 0.27493139999999994,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 19.341085,
+              "cpu_time_ms": 0.269474,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 16.740276599999998,
+              "cpu_time_ms": 0.23521539999999996,
+              "self_cuda_time_ms": 16.740276599999998,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 16.7357198,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 16.7357198,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 5.2027178,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 5.2027178,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add",
+              "cuda_time_ms": 2.6019094000000007,
+              "cpu_time_ms": 0.015192600000000039,
+              "self_cuda_time_ms": 2.6019094000000007,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 2.6008083999999996,
+              "cpu_time_ms": 0.01623620000000001,
+              "self_cuda_time_ms": 2.6008083999999996,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu",
+              "cuda_time_ms": 2.5288027999999976,
+              "cpu_time_ms": 0.021084000000000012,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp_min",
+              "cuda_time_ms": 2.5288027999999976,
+              "cpu_time_ms": 0.01630720000000001,
+              "self_cuda_time_ms": 2.5288027999999976,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 109.49565219999998
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 109.50 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 19.341 ms\n  2. aten::convolution: 19.341 ms\n  3. aten::_convolution: 19.341 ms\n  4. aten::cudnn_convolution: 16.740 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 16.736 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 5.203 ms"
+      },
+      "2": {
+        "problem_id": 2,
+        "problem_name": "2_ConvTranspose2d_BiasAdd_Clamp_Scaling_Clamp_Divide.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/2_ConvTranspose2d_BiasAdd_Clamp_Scaling_Clamp_Divide.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a transposed convolution, adds a bias term, clamps, scales, clamps, and divides.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, stride, padding, output_padding, bias_shape, scaling_factor):\n        super(Model, self).__init__()\n        self.conv_transpose = nn.ConvTranspose2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding, output_padding=output_padding)\n        self.bias = nn.Parameter(torch.randn(bias_shape)) \n        self.scaling_factor = scaling_factor\n\n    def forward(self, x):\n        x = self.conv_transpose(x)\n        x = x + self.bias\n        x = torch.clamp(x, min=0.0, max=1.0)\n        x = x * self.scaling_factor\n        x = torch.clamp(x, min=0.0, max=1.0)\n        x = x / self.scaling_factor\n        return x\n\nbatch_size = 128\nin_channels  = 64  \nout_channels = 64  \nheight = width = 128 \nkernel_size = 3\nstride = 2\npadding = 1\noutput_padding = 1\nbias_shape = (out_channels, 1, 1)\nscaling_factor = 2.0\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, stride, padding, output_padding, bias_shape, scaling_factor]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 258.46 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose2d: 41.203 ms\n  2. aten::convolution: 41.203 ms\n  3. aten::_convolution: 41.203 ms\n  4. aten::cudnn_convolution_transpose: 35.859 ms\n  5. void cudnn::detail::dgrad_engine<float, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_grad_params, unsigned long long, int, unsigned long long, int, float, int, int, int): 33.190 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 10.698 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv_transpose2d",
+              "cuda_time_ms": 41.20272800000001,
+              "cpu_time_ms": 0.3921893999999999,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 41.20272800000001,
+              "cpu_time_ms": 0.38769599999999993,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 41.20272800000001,
+              "cpu_time_ms": 0.3820904,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution_transpose",
+              "cuda_time_ms": 35.8588778,
+              "cpu_time_ms": 0.35005460000000005,
+              "self_cuda_time_ms": 35.8588778,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void cudnn::detail::dgrad_engine<float, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_grad_params, unsigned long long, int, unsigned long long, int, float, int, int, int)",
+              "cuda_time_ms": 33.189884,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 33.189884,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 10.697537599999995,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.697537599999995,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp",
+              "cuda_time_ms": 10.434768600000005,
+              "cpu_time_ms": 0.031780600000000186,
+              "self_cuda_time_ms": 10.434768600000005,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 10.434768600000005,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.434768600000005,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add",
+              "cuda_time_ms": 5.353687399999991,
+              "cpu_time_ms": 0.015734599999999863,
+              "self_cuda_time_ms": 5.353687399999991,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 5.343850200000005,
+              "cpu_time_ms": 0.016617600000000128,
+              "self_cuda_time_ms": 5.343850200000005,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 258.45761999999996
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 258.46 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose2d: 41.203 ms\n  2. aten::convolution: 41.203 ms\n  3. aten::_convolution: 41.203 ms\n  4. aten::cudnn_convolution_transpose: 35.859 ms\n  5. void cudnn::detail::dgrad_engine<float, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_grad_params, unsigned long long, int, unsigned long long, int, float, int, int, int): 33.190 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 10.698 ms"
+      },
+      "3": {
+        "problem_id": 3,
+        "problem_name": "3_ConvTranspose3d_Sum_LayerNorm_AvgPool_GELU.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/3_ConvTranspose3d_Sum_LayerNorm_AvgPool_GELU.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a 3D transposed convolution, followed by a sum, layer normalization, average pooling, and GELU activation.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, stride, padding, output_padding, sum_weight, norm_shape, pool_kernel_size):\n        super(Model, self).__init__()\n        self.conv_transpose = nn.ConvTranspose3d(in_channels, out_channels, kernel_size, stride=stride, padding=padding, output_padding=output_padding)\n        self.sum_weight = nn.Parameter(torch.tensor(sum_weight))\n        self.norm = nn.LayerNorm(norm_shape)\n        self.avg_pool = nn.AvgPool3d(kernel_size=pool_kernel_size)\n        self.gelu = nn.GELU()\n\n    def forward(self, x):\n        x = self.conv_transpose(x)\n        x = x + self.sum_weight\n        x = self.norm(x)\n        x = self.avg_pool(x)\n        x = self.gelu(x)\n        return x\n\nbatch_size = 32\nin_channels = 32\nout_channels = 64\ndepth, height, width = 16, 32, 32\nkernel_size = (3, 3, 3)\nstride = (2, 2, 2)\npadding = (1, 1, 1)\noutput_padding = (1, 1, 1)\nsum_weight = 1.0\nnorm_shape = (out_channels,)\npool_kernel_size = (2, 2, 2)\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, depth, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, stride, padding, output_padding, sum_weight, norm_shape, pool_kernel_size]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 181.29 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose3d: 26.504 ms\n  2. aten::convolution: 26.504 ms\n  3. aten::_convolution: 26.504 ms\n  4. aten::cudnn_convolution_transpose: 23.831 ms\n  5. void convolveNd_dgrad_float_engine<float, 3, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_gradNd_params, unsigned long long, int, unsigned long long, int, float, int): 22.581 ms\n  6. aten::layer_norm: 13.118 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv_transpose3d",
+              "cuda_time_ms": 26.504106000000007,
+              "cpu_time_ms": 0.3899194,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 26.504106000000007,
+              "cpu_time_ms": 0.3862478,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 26.504106000000007,
+              "cpu_time_ms": 0.3800744,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution_transpose",
+              "cuda_time_ms": 23.83108000000001,
+              "cpu_time_ms": 0.3491918,
+              "self_cuda_time_ms": 23.83108000000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void convolveNd_dgrad_float_engine<float, 3, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_gradNd_params, unsigned long long, int, unsigned long long, int, float, int)",
+              "cuda_time_ms": 22.581331000000006,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 22.581331000000006,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::layer_norm",
+              "cuda_time_ms": 13.117573999999994,
+              "cpu_time_ms": 0.04170499999999998,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::native_layer_norm",
+              "cuda_time_ms": 13.117573999999994,
+              "cpu_time_ms": 0.03733260000000001,
+              "self_cuda_time_ms": 13.117573999999994,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::(anonymous namespace)::vectorized_layer_norm_kernel<float, float>(int, float, float const*, float const*, float const*, float*, float*, float*)",
+              "cuda_time_ms": 13.117573999999994,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 13.117573999999994,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 5.337226800000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 5.337226800000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 2.6730259999999992,
+              "cpu_time_ms": 0.01614939999999992,
+              "self_cuda_time_ms": 2.6730259999999992,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 181.28595680000004
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 181.29 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose3d: 26.504 ms\n  2. aten::convolution: 26.504 ms\n  3. aten::_convolution: 26.504 ms\n  4. aten::cudnn_convolution_transpose: 23.831 ms\n  5. void convolveNd_dgrad_float_engine<float, 3, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_gradNd_params, unsigned long long, int, unsigned long long, int, float, int): 22.581 ms\n  6. aten::layer_norm: 13.118 ms"
+      },
+      "4": {
+        "problem_id": 4,
+        "problem_name": "4_Conv2d_Mish_Mish.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/4_Conv2d_Mish_Mish.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Simple model that performs a convolution, applies Mish, and another Mish.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size):\n        super(Model, self).__init__()\n        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size)\n\n    def forward(self, x):\n        x = self.conv(x)\n        x = torch.nn.functional.mish(x)\n        x = torch.nn.functional.mish(x)\n        return x\n\nbatch_size   = 64  \nin_channels  = 64  \nout_channels = 128  \nheight = width = 256\nkernel_size = 3\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 216.29 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 39.148 ms\n  2. aten::convolution: 39.148 ms\n  3. aten::_convolution: 39.148 ms\n  4. aten::cudnn_convolution: 33.882 ms\n  5. volta_sgemm_64x64_nn: 13.504 ms\n  6. void cudnn::winograd_nonfused::winogradForwardOutput4x4<float, float>(cudnn::winograd_nonfused::WinogradOutputParams<float, float>): 12.762 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 39.14816439999999,
+              "cpu_time_ms": 0.516808,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 39.14816439999999,
+              "cpu_time_ms": 0.5130688000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 39.14816439999999,
+              "cpu_time_ms": 0.5070054,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 33.881848399999996,
+              "cpu_time_ms": 0.47412900000000013,
+              "self_cuda_time_ms": 33.881848399999996,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_64x64_nn",
+              "cuda_time_ms": 13.50390139999999,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 13.50390139999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void cudnn::winograd_nonfused::winogradForwardOutput4x4<float, float>(cudnn::winograd_nonfused::WinogradOutputParams<float, float>)",
+              "cuda_time_ms": 12.762493599999999,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 12.762493599999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mish",
+              "cuda_time_ms": 10.273664,
+              "cpu_time_ms": 0.027420200000000207,
+              "self_cuda_time_ms": 10.273664,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::mish_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::mish_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 10.273664,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.273664,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void cudnn::winograd_nonfused::winogradForwardData4x4<float, float>(cudnn::winograd_nonfused::WinogradDataParams<float, float>)",
+              "cuda_time_ms": 7.6113957999999995,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 7.6113957999999995,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 5.266315999999998,
+              "cpu_time_ms": 0.016337399999999887,
+              "self_cuda_time_ms": 5.266315999999998,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 216.28814999999994
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 216.29 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 39.148 ms\n  2. aten::convolution: 39.148 ms\n  3. aten::_convolution: 39.148 ms\n  4. aten::cudnn_convolution: 33.882 ms\n  5. volta_sgemm_64x64_nn: 13.504 ms\n  6. void cudnn::winograd_nonfused::winogradForwardOutput4x4<float, float>(cudnn::winograd_nonfused::WinogradOutputParams<float, float>): 12.762 ms"
+      },
+      "5": {
+        "problem_id": 5,
+        "problem_name": "5_ConvTranspose2d_Subtract_Tanh.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/5_ConvTranspose2d_Subtract_Tanh.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a transposed convolution, subtracts a bias term, and applies tanh activation.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, bias_shape, stride=2, padding=1, output_padding=1):\n        super(Model, self).__init__()\n        self.conv_transpose = nn.ConvTranspose2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding, output_padding=output_padding)\n        self.bias = nn.Parameter(torch.randn(bias_shape)) \n\n    def forward(self, x):\n        x = self.conv_transpose(x)\n        x = x - self.bias\n        x = torch.tanh(x)\n        return x\n\nbatch_size = 32\nin_channels  = 64  \nout_channels = 64  \nheight = width = 256 \nkernel_size = 4\nbias_shape = (out_channels, 1, 1)\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, bias_shape]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 396.35 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose2d: 75.015 ms\n  2. aten::convolution: 75.015 ms\n  3. aten::_convolution: 75.015 ms\n  4. aten::cudnn_convolution_transpose: 69.642 ms\n  5. void fft2d_c2r_32x32<float, false, false, 0u, false, false>(float*, float2 const*, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, bool, float*, float*, int2, cudnnActivationStruct, int, int): 32.311 ms\n  6. volta_gcgemm_64x32_nt: 17.842 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv_transpose2d",
+              "cuda_time_ms": 75.01462680000006,
+              "cpu_time_ms": 1.6986612,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 75.01462680000006,
+              "cpu_time_ms": 1.6943493999999997,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 75.01462680000006,
+              "cpu_time_ms": 1.6877205999999998,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution_transpose",
+              "cuda_time_ms": 69.64248220000007,
+              "cpu_time_ms": 1.6406886,
+              "self_cuda_time_ms": 69.64248220000007,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void fft2d_c2r_32x32<float, false, false, 0u, false, false>(float*, float2 const*, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, bool, float*, float*, int2, cudnnActivationStruct, int, int)",
+              "cuda_time_ms": 32.311170799999985,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 32.311170799999985,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_gcgemm_64x32_nt",
+              "cuda_time_ms": 17.84228100000003,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 17.84228100000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 10.758637999999994,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 10.758637999999994,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void foldedNchwToNchwKernel<float, float, float, true, (cudnnKernelDataType_t)0>(int, int, int, int, int, int, int, float const*, float*, int, int, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, cudnn::reduced_divisor, cudnn::reduced_divisor, cudnn::reduced_divisor, cudnn::reduced_divisor)",
+              "cuda_time_ms": 8.708742399999995,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 8.708742399999995,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void fft2d_r2c_32x32<float, false, 0u, false>(float2*, float const*, int, int, int, int, int, int, int, int, int, cudnn::reduced_divisor, bool, int2, int, int)",
+              "cuda_time_ms": 6.215752200000068,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 6.215752200000068,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::sub",
+              "cuda_time_ms": 5.386493399999997,
+              "cpu_time_ms": 0.02524860000000017,
+              "self_cuda_time_ms": 5.386493399999997,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 396.34707120000036
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 396.35 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose2d: 75.015 ms\n  2. aten::convolution: 75.015 ms\n  3. aten::_convolution: 75.015 ms\n  4. aten::cudnn_convolution_transpose: 69.642 ms\n  5. void fft2d_c2r_32x32<float, false, false, 0u, false, false>(float*, float2 const*, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, bool, float*, float*, int2, cudnnActivationStruct, int, int): 32.311 ms\n  6. volta_gcgemm_64x32_nt: 17.842 ms"
+      },
+      "6": {
+        "problem_id": 6,
+        "problem_name": "6_Conv3d_Softmax_MaxPool_MaxPool.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/6_Conv3d_Softmax_MaxPool_MaxPool.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a 3D convolution, applies Softmax, and performs two max pooling operations.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, pool_kernel_size):\n        super(Model, self).__init__()\n        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size)\n        self.pool1 = nn.MaxPool3d(pool_kernel_size)\n        self.pool2 = nn.MaxPool3d(pool_kernel_size)\n\n    def forward(self, x):\n        \"\"\"\n        Args:\n            x: Input tensor of shape (batch_size, in_channels, depth, height, width)\n        Returns:\n            Output tensor of shape (batch_size, out_channels, depth', height', width') where depth', height', width' are the dimensions after pooling.\n        \"\"\"\n        x = self.conv(x)\n        x = torch.softmax(x, dim=1)\n        x = self.pool1(x)\n        x = self.pool2(x)\n        return x\n\nbatch_size = 128\nin_channels = 3\nout_channels = 16\ndepth, height, width = 16, 32, 32\nkernel_size = 3\npool_kernel_size = 2\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, depth, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, pool_kernel_size]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 10.65 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv3d: 1.536 ms\n  2. aten::convolution: 1.536 ms\n  3. aten::_convolution: 1.536 ms\n  4. aten::cudnn_convolution: 1.274 ms\n  5. void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool): 1.274 ms\n  6. aten::softmax: 0.659 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv3d",
+              "cuda_time_ms": 1.5356838000000006,
+              "cpu_time_ms": 0.48567479999999996,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 1.5356838000000006,
+              "cpu_time_ms": 0.4798737999999999,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 1.5356838000000006,
+              "cpu_time_ms": 0.474832,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 1.2739648000000003,
+              "cpu_time_ms": 0.4434152000000001,
+              "self_cuda_time_ms": 1.2739648000000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool)",
+              "cuda_time_ms": 1.2739648000000003,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 1.2739648000000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::softmax",
+              "cuda_time_ms": 0.6591294000000002,
+              "cpu_time_ms": 0.02096220000000003,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_softmax",
+              "cuda_time_ms": 0.6591294000000002,
+              "cpu_time_ms": 0.018654600000000028,
+              "self_cuda_time_ms": 0.6591294000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::(anonymous namespace)::cunn_SpatialSoftMaxForward<float, float, float, int, at::native::(anonymous namespace)::SoftMaxForwardEpilogue>(float*, float const*, int, int, int)",
+              "cuda_time_ms": 0.6591294000000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.6591294000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool3d",
+              "cuda_time_ms": 0.3323358,
+              "cpu_time_ms": 0.06512379999999994,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool3d_with_indices",
+              "cuda_time_ms": 0.3323358,
+              "cpu_time_ms": 0.05964759999999997,
+              "self_cuda_time_ms": 0.3323358,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 10.652814599999997
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 10.65 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv3d: 1.536 ms\n  2. aten::convolution: 1.536 ms\n  3. aten::_convolution: 1.536 ms\n  4. aten::cudnn_convolution: 1.274 ms\n  5. void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool): 1.274 ms\n  6. aten::softmax: 0.659 ms"
+      },
+      "7": {
+        "problem_id": 7,
+        "problem_name": "7_Conv3d_ReLU_LeakyReLU_GELU_Sigmoid_BiasAdd.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/7_Conv3d_ReLU_LeakyReLU_GELU_Sigmoid_BiasAdd.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a 3D convolution, applies ReLU, LeakyReLU, GELU, Sigmoid activations, and bias in sequence.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, bias_shape):\n        super(Model, self).__init__()\n        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size)\n        self.bias = nn.Parameter(torch.randn(bias_shape)) \n\n    def forward(self, x):\n        x = self.conv(x)\n        x = torch.relu(x)\n        x = torch.nn.functional.leaky_relu(x, negative_slope=0.01)\n        x = torch.nn.functional.gelu(x)\n        x = torch.sigmoid(x)\n        x = x + self.bias\n        return x\n\nbatch_size = 64\nin_channels = 8\nout_channels = 32\ndepth, height, width = 32, 64, 64\nkernel_size = 3\nbias_shape = (out_channels, 1, 1, 1)\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, depth, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, bias_shape]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 109.00 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv3d: 16.720 ms\n  2. aten::convolution: 16.720 ms\n  3. aten::_convolution: 16.720 ms\n  4. aten::cudnn_convolution: 14.364 ms\n  5. void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool): 14.364 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 4.719 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv3d",
+              "cuda_time_ms": 16.719749,
+              "cpu_time_ms": 0.4895022000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 16.719749,
+              "cpu_time_ms": 0.4854306000000002,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 16.719749,
+              "cpu_time_ms": 0.4801004000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 14.364192399999999,
+              "cpu_time_ms": 0.4487058000000001,
+              "self_cuda_time_ms": 14.364192399999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool)",
+              "cuda_time_ms": 14.364192399999999,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 14.364192399999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 4.719331200000001,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 4.719331200000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add",
+              "cuda_time_ms": 2.3637746000000015,
+              "cpu_time_ms": 0.01630160000000005,
+              "self_cuda_time_ms": 2.3637746000000015,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 2.3555566,
+              "cpu_time_ms": 0.015672799999999914,
+              "self_cuda_time_ms": 2.3555566,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::gelu",
+              "cuda_time_ms": 2.2974897999999992,
+              "cpu_time_ms": 0.013810599999999975,
+              "self_cuda_time_ms": 2.2974897999999992,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::GeluCUDAKernelImpl(at::TensorIteratorBase&, at::native::GeluType)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::GeluCUDAKernelImpl(at::TensorIteratorBase&, at::native::GeluType)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 2.2974897999999992,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 2.2974897999999992,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 108.99600579999993
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 109.00 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv3d: 16.720 ms\n  2. aten::convolution: 16.720 ms\n  3. aten::_convolution: 16.720 ms\n  4. aten::cudnn_convolution: 14.364 ms\n  5. void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool): 14.364 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 4.719 ms"
+      },
+      "8": {
+        "problem_id": 8,
+        "problem_name": "8_Conv3d_Divide_Max_GlobalAvgPool_BiasAdd_Sum.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/8_Conv3d_Divide_Max_GlobalAvgPool_BiasAdd_Sum.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a 3D convolution, divides by a constant, applies max pooling,\n    global average pooling, adds a bias term, and sums along a specific dimension.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, divisor, pool_size, bias_shape, sum_dim):\n        super(Model, self).__init__()\n        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size)\n        self.divisor = divisor\n        self.max_pool = nn.MaxPool3d(pool_size)\n        self.global_avg_pool = nn.AdaptiveAvgPool3d((1, 1, 1))\n        self.bias = nn.Parameter(torch.randn(bias_shape))\n        self.sum_dim = sum_dim\n\n    def forward(self, x):\n        x = self.conv(x)\n        x = x / self.divisor\n        x = self.max_pool(x)\n        x = self.global_avg_pool(x)\n        x = x + self.bias\n        x = torch.sum(x, dim=self.sum_dim)\n        return x\n\nbatch_size   = 128  \nin_channels  = 8            \nout_channels = 16  \ndepth = 16; height = width = 64 \nkernel_size = (3, 3, 3)\ndivisor = 2.0\npool_size = (2, 2, 2)\nbias_shape = (out_channels, 1, 1, 1)\nsum_dim = 1\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, depth, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, divisor, pool_size, bias_shape, sum_dim]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 76.14 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv3d: 14.213 ms\n  2. aten::convolution: 14.213 ms\n  3. aten::_convolution: 14.213 ms\n  4. aten::cudnn_convolution: 13.111 ms\n  5. void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool): 13.111 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 1.105 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv3d",
+              "cuda_time_ms": 14.213087199999995,
+              "cpu_time_ms": 0.49382900000000013,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 14.213087199999995,
+              "cpu_time_ms": 0.4898155999999999,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 14.213087199999995,
+              "cpu_time_ms": 0.4831886000000002,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 13.111170199999995,
+              "cpu_time_ms": 0.4483248000000001,
+              "self_cuda_time_ms": 13.111170199999995,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool)",
+              "cuda_time_ms": 13.111170199999995,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 13.111170199999995,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 1.1047583999999988,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 1.1047583999999988,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 1.1019169999999976,
+              "cpu_time_ms": 0.016841199999999935,
+              "self_cuda_time_ms": 1.1019169999999976,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::div",
+              "cuda_time_ms": 1.0735332000000017,
+              "cpu_time_ms": 0.018673599999999988,
+              "self_cuda_time_ms": 1.0735332000000017,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::BUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::BUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 1.0735332000000017,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 1.0735332000000017,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool3d",
+              "cuda_time_ms": 0.8910195999999967,
+              "cpu_time_ms": 0.040344599999999994,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 76.13727739999993
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 76.14 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv3d: 14.213 ms\n  2. aten::convolution: 14.213 ms\n  3. aten::_convolution: 14.213 ms\n  4. aten::cudnn_convolution: 13.111 ms\n  5. void implicit_convolveNd_sgemm<float, 3, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_convNd_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool): 13.111 ms\n  6. void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}): 1.105 ms"
+      },
+      "9": {
+        "problem_id": 9,
+        "problem_name": "9_Matmul_Subtract_Multiply_ReLU.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/9_Matmul_Subtract_Multiply_ReLU.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a matrix multiplication, subtraction, multiplication, and ReLU activation.\n    \"\"\"\n    def __init__(self, in_features, out_features, subtract_value, multiply_value):\n        super(Model, self).__init__()\n        self.linear = nn.Linear(in_features, out_features)\n        self.subtract_value = subtract_value\n        self.multiply_value = multiply_value\n\n    def forward(self, x):\n        x = self.linear(x)\n        x = x - self.subtract_value\n        x = x * self.multiply_value\n        x = torch.relu(x)\n        return x\n\nbatch_size = 1024\nin_features = 8192\nout_features = 8192\nsubtract_value = 2.0\nmultiply_value = 1.5\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_features)]\n\ndef get_init_inputs():\n    return [in_features, out_features, subtract_value, multiply_value]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 28.99 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 9.468 ms\n  2. aten::addmm: 9.468 ms\n  3. volta_sgemm_128x64_tn: 9.466 ms\n  4. aten::relu: 0.084 ms\n  5. aten::clamp_min: 0.084 ms\n  6. void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>): 0.084 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::linear",
+              "cuda_time_ms": 9.467703400000001,
+              "cpu_time_ms": 0.2871204,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::addmm",
+              "cuda_time_ms": 9.467703400000001,
+              "cpu_time_ms": 0.27036960000000004,
+              "self_cuda_time_ms": 9.467703400000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x64_tn",
+              "cuda_time_ms": 9.4660586,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 9.4660586,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu",
+              "cuda_time_ms": 0.08397380000000157,
+              "cpu_time_ms": 0.018844199999999957,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp_min",
+              "cuda_time_ms": 0.08397380000000157,
+              "cpu_time_ms": 0.01382460000000001,
+              "self_cuda_time_ms": 0.08397380000000157,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.08397380000000157,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.08397380000000157,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::mul",
+              "cuda_time_ms": 0.0837884000000009,
+              "cpu_time_ms": 0.015779400000000034,
+              "self_cuda_time_ms": 0.0837884000000009,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2> >(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.0837884000000009,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.0837884000000009,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::sub",
+              "cuda_time_ms": 0.08340399999999863,
+              "cpu_time_ms": 0.01959280000000008,
+              "self_cuda_time_ms": 0.08340399999999863,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctorOnSelf_add<float>, at::detail::Array<char*, 2> >(int, at::native::CUDAFunctorOnSelf_add<float>, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.08340399999999863,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.08340399999999863,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 28.989416400000007
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 28.99 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 9.468 ms\n  2. aten::addmm: 9.468 ms\n  3. volta_sgemm_128x64_tn: 9.466 ms\n  4. aten::relu: 0.084 ms\n  5. aten::clamp_min: 0.084 ms\n  6. void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>): 0.084 ms"
+      },
+      "10": {
+        "problem_id": 10,
+        "problem_name": "10_ConvTranspose2d_MaxPool_Hardtanh_Mean_Tanh.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level2/10_ConvTranspose2d_MaxPool_Hardtanh_Mean_Tanh.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\n\nclass Model(nn.Module):\n    \"\"\"\n    Model that performs a transposed convolution, followed by max pooling, hardtanh activation, mean operation, and tanh activation.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, stride, padding, maxpool_kernel_size, maxpool_stride, hardtanh_min, hardtanh_max):\n        super(Model, self).__init__()\n        self.conv_transpose = nn.ConvTranspose2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding)\n        self.maxpool = nn.MaxPool2d(kernel_size=maxpool_kernel_size, stride=maxpool_stride)\n        self.hardtanh = nn.Hardtanh(min_val=hardtanh_min, max_val=hardtanh_max)\n\n    def forward(self, x):\n        x = self.conv_transpose(x)\n        x = self.maxpool(x)\n        x = self.hardtanh(x)\n        x = torch.mean(x, dim=(2, 3), keepdim=True)\n        x = torch.tanh(x)\n        return x\n\nbatch_size = 128\nin_channels  = 64  \nout_channels = 64  \nheight = width = 256  \nkernel_size  = 3\nstride = 1\npadding = 1\nmaxpool_kernel_size = 2\nmaxpool_stride = 2\nhardtanh_min = -1\nhardtanh_max = 1\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, kernel_size, stride, padding, maxpool_kernel_size, maxpool_stride, hardtanh_min, hardtanh_max]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 186.32 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose2d: 33.090 ms\n  2. aten::convolution: 33.090 ms\n  3. aten::_convolution: 33.090 ms\n  4. aten::cudnn_convolution_transpose: 27.719 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 27.716 ms\n  6. aten::add_: 5.370 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv_transpose2d",
+              "cuda_time_ms": 33.08976019999999,
+              "cpu_time_ms": 0.502157,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 33.08976019999999,
+              "cpu_time_ms": 0.4980968,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 33.08976019999999,
+              "cpu_time_ms": 0.49207399999999996,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution_transpose",
+              "cuda_time_ms": 27.719401400000002,
+              "cpu_time_ms": 0.4597889999999999,
+              "self_cuda_time_ms": 27.719401400000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 27.716463800000003,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 27.716463800000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 5.370358799999994,
+              "cpu_time_ms": 0.01671119999999992,
+              "self_cuda_time_ms": 5.370358799999994,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 5.370358799999994,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 5.370358799999994,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool2d",
+              "cuda_time_ms": 4.799330200000003,
+              "cpu_time_ms": 0.02481680000000006,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool2d_with_indices",
+              "cuda_time_ms": 4.799330200000003,
+              "cpu_time_ms": 0.021108400000000076,
+              "self_cuda_time_ms": 4.799330200000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::(anonymous namespace)::max_pool_forward_nchw<float>(int, float const*, long, long, long, int, int, int, int, int, int, int, int, int, int, float*, long*)",
+              "cuda_time_ms": 4.799330200000003,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 4.799330200000003,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 186.321998
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 186.32 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv_transpose2d: 33.090 ms\n  2. aten::convolution: 33.090 ms\n  3. aten::_convolution: 33.090 ms\n  4. aten::cudnn_convolution_transpose: 27.719 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 27.716 ms\n  6. aten::add_: 5.370 ms"
+      }
+    },
+    "3": {
+      "1": {
+        "problem_id": 1,
+        "problem_name": "1_MLP.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/1_MLP.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    def __init__(self, input_size, layer_sizes, output_size):\n        \"\"\"\n        :param input_size: The number of input features\n        :param layer_sizes: A list of ints containing the sizes of each hidden layer\n        :param output_size: The number of output features\n        \"\"\"\n        super(Model, self).__init__()\n        \n        layers = []\n        current_input_size = input_size\n        \n        for layer_size in layer_sizes:\n            layers.append(nn.Linear(current_input_size, layer_size))\n            layers.append(nn.ReLU())\n            current_input_size = layer_size\n        \n        layers.append(nn.Linear(current_input_size, output_size))\n        \n        self.network = nn.Sequential(*layers)\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: The input tensor, shape (batch_size, input_size)\n        :return: The output tensor, shape (batch_size, output_size)\n        \"\"\"\n        return self.network(x)\n\n# Test code\nbatch_size = 128\ninput_size = 16384\nlayer_sizes = [16384, 16384]\noutput_size = 8192\n\ndef get_inputs():\n    return [torch.rand(batch_size, input_size)]\n\ndef get_init_inputs():\n    return [input_size, layer_sizes, output_size]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 38.10 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 12.660 ms\n  2. aten::addmm: 12.660 ms\n  3. volta_sgemm_128x128_tn: 12.656 ms\n  4. aten::relu: 0.041 ms\n  5. aten::clamp_min: 0.041 ms\n  6. void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>): 0.041 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::linear",
+              "cuda_time_ms": 12.659519600000001,
+              "cpu_time_ms": 0.429063,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::addmm",
+              "cuda_time_ms": 12.659519600000001,
+              "cpu_time_ms": 0.39312519999999973,
+              "self_cuda_time_ms": 12.659519600000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x128_tn",
+              "cuda_time_ms": 12.655666800000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 12.655666800000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu",
+              "cuda_time_ms": 0.04098519999999735,
+              "cpu_time_ms": 0.04342860000000005,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp_min",
+              "cuda_time_ms": 0.04098519999999735,
+              "cpu_time_ms": 0.035896000000000136,
+              "self_cuda_time_ms": 0.04098519999999735,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.04098519999999735,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.04098519999999735,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "Memset (Device)",
+              "cuda_time_ms": 0.0038527999999982514,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.0038527999999982514,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 38.101514399999985
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 38.10 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 12.660 ms\n  2. aten::addmm: 12.660 ms\n  3. volta_sgemm_128x128_tn: 12.656 ms\n  4. aten::relu: 0.041 ms\n  5. aten::clamp_min: 0.041 ms\n  6. void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>): 0.041 ms"
+      },
+      "2": {
+        "problem_id": 2,
+        "problem_name": "2_ShallowWideMLP.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/2_ShallowWideMLP.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    def __init__(self, input_size, hidden_layer_sizes, output_size):\n        \"\"\"\n        :param input_size: The number of input features\n        :param hidden_layer_sizes: A list of ints containing the sizes of each hidden layer\n        :param output_size: The number of output features\n        \"\"\"\n        super(Model, self).__init__()\n        \n        layers = []\n        current_input_size = input_size\n        \n        for hidden_size in hidden_layer_sizes:\n            layers.append(nn.Linear(current_input_size, hidden_size))\n            layers.append(nn.ReLU())\n            current_input_size = hidden_size\n        \n        layers.append(nn.Linear(current_input_size, output_size))\n        \n        self.network = nn.Sequential(*layers)\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: The input tensor, shape (batch_size, input_size)\n        :return: The output tensor, shape (batch_size, output_size)\n        \"\"\"\n        return self.network(x)\n\n# Test code\nbatch_size = 128\ninput_size = 16384\nhidden_layer_sizes = [32768, 32768]\noutput_size = 16384\n\ndef get_inputs():\n    return [torch.rand(batch_size, input_size)]\n\ndef get_init_inputs():\n    return [input_size, hidden_layer_sizes, output_size]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 118.55 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 39.436 ms\n  2. aten::addmm: 39.436 ms\n  3. volta_sgemm_128x128_tn: 39.432 ms\n  4. aten::relu: 0.081 ms\n  5. aten::clamp_min: 0.081 ms\n  6. void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>): 0.081 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::linear",
+              "cuda_time_ms": 39.435995,
+              "cpu_time_ms": 0.23574880000000004,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::addmm",
+              "cuda_time_ms": 39.435995,
+              "cpu_time_ms": 0.20714359999999998,
+              "self_cuda_time_ms": 39.435995,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x128_tn",
+              "cuda_time_ms": 39.432007999999996,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 39.432007999999996,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu",
+              "cuda_time_ms": 0.081267000000002,
+              "cpu_time_ms": 0.038948000000000024,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp_min",
+              "cuda_time_ms": 0.081267000000002,
+              "cpu_time_ms": 0.03182620000000001,
+              "self_cuda_time_ms": 0.081267000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.081267000000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.081267000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "Memset (Device)",
+              "cuda_time_ms": 0.003986999999997147,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.003986999999997147,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 118.55178599999998
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 118.55 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 39.436 ms\n  2. aten::addmm: 39.436 ms\n  3. volta_sgemm_128x128_tn: 39.432 ms\n  4. aten::relu: 0.081 ms\n  5. aten::clamp_min: 0.081 ms\n  6. void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>): 0.081 ms"
+      },
+      "3": {
+        "problem_id": 3,
+        "problem_name": "3_DeepNarrowMLP.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/3_DeepNarrowMLP.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    def __init__(self, input_size, hidden_layer_sizes, output_size):\n        \"\"\"\n        :param input_size: The number of input features\n        :param hidden_layer_sizes: A list of ints containing the sizes of each hidden layer\n        :param output_size: The number of output features\n        \"\"\"\n        super(Model, self).__init__()\n        \n        layers = []\n        current_input_size = input_size\n        \n        for hidden_size in hidden_layer_sizes:\n            layers.append(nn.Linear(current_input_size, hidden_size))\n            layers.append(nn.ReLU())\n            current_input_size = hidden_size\n        \n        layers.append(nn.Linear(current_input_size, output_size))\n        \n        self.network = nn.Sequential(*layers)\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: The input tensor, shape (batch_size, input_size)\n        :return: The output tensor, shape (batch_size, output_size)\n        \"\"\"\n        return self.network(x)\n\n# Test code\nbatch_size = 1024\ninput_size = 8192\nhidden_layer_sizes = [1024] * 16  # deep network with wider layers\noutput_size = 8192\n\ndef get_inputs():\n    return [torch.rand(batch_size, input_size)]\n\ndef get_init_inputs():\n    return [input_size, hidden_layer_sizes, output_size]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 17.70 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 5.764 ms\n  2. aten::addmm: 5.764 ms\n  3. volta_sgemm_128x32_tn: 3.070 ms\n  4. volta_sgemm_128x64_tn: 2.671 ms\n  5. aten::relu: 0.137 ms\n  6. aten::clamp_min: 0.137 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::linear",
+              "cuda_time_ms": 5.763538999999999,
+              "cpu_time_ms": 0.7048278000000004,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::addmm",
+              "cuda_time_ms": 5.763538999999999,
+              "cpu_time_ms": 0.568929399999999,
+              "self_cuda_time_ms": 5.763538999999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x32_tn",
+              "cuda_time_ms": 3.070228000000001,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 3.070228000000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x64_tn",
+              "cuda_time_ms": 2.671211799999999,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 2.671211799999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu",
+              "cuda_time_ms": 0.13667079999999843,
+              "cpu_time_ms": 0.2641652000000008,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp_min",
+              "cuda_time_ms": 0.13667079999999843,
+              "cpu_time_ms": 0.21306200000000014,
+              "self_cuda_time_ms": 0.13667079999999843,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.13667079999999843,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.13667079999999843,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "Memset (Device)",
+              "cuda_time_ms": 0.022099199999998494,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.022099199999998494,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 17.70062939999999
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 17.70 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::linear: 5.764 ms\n  2. aten::addmm: 5.764 ms\n  3. volta_sgemm_128x32_tn: 3.070 ms\n  4. volta_sgemm_128x64_tn: 2.671 ms\n  5. aten::relu: 0.137 ms\n  6. aten::clamp_min: 0.137 ms"
+      },
+      "4": {
+        "problem_id": 4,
+        "problem_name": "4_LeNet5.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/4_LeNet5.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    def __init__(self, num_classes):\n        \"\"\"\n        LeNet-5 architecture implementation in PyTorch.\n\n        :param num_classes: The number of output classes.\n        \"\"\"\n        super(Model, self).__init__()\n        \n        # Convolutional layers\n        self.conv1 = nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1)\n        self.conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1)\n        \n        # Fully connected layers\n        self.fc1 = nn.Linear(in_features=16*5*5, out_features=120)\n        self.fc2 = nn.Linear(in_features=120, out_features=84)\n        self.fc3 = nn.Linear(in_features=84, out_features=num_classes)\n    \n    def forward(self, x):\n        \"\"\"\n        Forward pass of the LeNet-5 model.\n\n        :param x: The input tensor, shape (batch_size, 1, 32, 32)\n        :return: The output tensor, shape (batch_size, num_classes)\n        \"\"\"\n        # First convolutional layer with ReLU activation and max pooling\n        x = F.relu(self.conv1(x))\n        x = F.max_pool2d(x, kernel_size=2, stride=2)\n        \n        # Second convolutional layer with ReLU activation and max pooling\n        x = F.relu(self.conv2(x))\n        x = F.max_pool2d(x, kernel_size=2, stride=2)\n        \n        # Flatten the output for the fully connected layers\n        x = x.view(-1, 16*5*5)\n        \n        # First fully connected layer with ReLU activation\n        x = F.relu(self.fc1(x))\n        \n        # Second fully connected layer with ReLU activation\n        x = F.relu(self.fc2(x))\n        \n        # Final fully connected layer\n        x = self.fc3(x)\n        \n        return x\n\n# Test code for the LeNet-5 model (larger batch & image)\nbatch_size = 4096\nnum_classes = 20\n\ndef get_inputs():\n    return [torch.rand(batch_size, 1, 32, 32)]\n\ndef get_init_inputs():\n    return [num_classes]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 8.34 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 1.300 ms\n  2. aten::convolution: 1.300 ms\n  3. aten::_convolution: 1.300 ms\n  4. aten::cudnn_convolution: 1.035 ms\n  5. _5x_cudnn_volta_scudnn_128x32_relu_medium_nn_v1: 1.031 ms\n  6. aten::add_: 0.265 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 1.2996588,
+              "cpu_time_ms": 0.5692249999999998,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 1.2996588,
+              "cpu_time_ms": 0.5613218000000003,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 1.2996588,
+              "cpu_time_ms": 0.5514976000000003,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 1.0347916000000001,
+              "cpu_time_ms": 0.4950207999999999,
+              "self_cuda_time_ms": 1.0347916000000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_128x32_relu_medium_nn_v1",
+              "cuda_time_ms": 1.0308492000000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 1.0308492000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::add_",
+              "cuda_time_ms": 0.26486719999999986,
+              "cpu_time_ms": 0.028631799999999746,
+              "self_cuda_time_ms": 0.26486719999999986,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+              "cuda_time_ms": 0.26486719999999986,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.26486719999999986,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu",
+              "cuda_time_ms": 0.2622298000000006,
+              "cpu_time_ms": 0.07259399999999969,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::clamp_min",
+              "cuda_time_ms": 0.2622298000000006,
+              "cpu_time_ms": 0.058608799999999885,
+              "self_cuda_time_ms": 0.2622298000000006,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, at::detail::Array<char*, 2>)",
+              "cuda_time_ms": 0.2622298000000006,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.2622298000000006,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 8.339415
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 8.34 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 1.300 ms\n  2. aten::convolution: 1.300 ms\n  3. aten::_convolution: 1.300 ms\n  4. aten::cudnn_convolution: 1.035 ms\n  5. _5x_cudnn_volta_scudnn_128x32_relu_medium_nn_v1: 1.031 ms\n  6. aten::add_: 0.265 ms"
+      },
+      "5": {
+        "problem_id": 5,
+        "problem_name": "5_AlexNet.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/5_AlexNet.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    def __init__(self, num_classes=1000):\n        \"\"\"\n        :param num_classes: The number of output classes (default is 1000 for ImageNet)\n        \"\"\"\n        super(Model, self).__init__()\n        \n        # First convolutional layer\n        self.conv1 = nn.Conv2d(in_channels=3, out_channels=96, kernel_size=11, stride=4, padding=2)\n        self.relu1 = nn.ReLU(inplace=True)\n        self.maxpool1 = nn.MaxPool2d(kernel_size=3, stride=2)\n        \n        # Second convolutional layer\n        self.conv2 = nn.Conv2d(in_channels=96, out_channels=256, kernel_size=5, padding=2)\n        self.relu2 = nn.ReLU(inplace=True)\n        self.maxpool2 = nn.MaxPool2d(kernel_size=3, stride=2)\n        \n        # Third convolutional layer\n        self.conv3 = nn.Conv2d(in_channels=256, out_channels=384, kernel_size=3, padding=1)\n        self.relu3 = nn.ReLU(inplace=True)\n        \n        # Fourth convolutional layer\n        self.conv4 = nn.Conv2d(in_channels=384, out_channels=384, kernel_size=3, padding=1)\n        self.relu4 = nn.ReLU(inplace=True)\n        \n        # Fifth convolutional layer\n        self.conv5 = nn.Conv2d(in_channels=384, out_channels=256, kernel_size=3, padding=1)\n        self.relu5 = nn.ReLU(inplace=True)\n        self.maxpool3 = nn.MaxPool2d(kernel_size=3, stride=2)\n        \n        # Fully connected layers\n        self.fc1 = nn.Linear(in_features=256 * 6 * 6, out_features=4096)\n        self.relu6 = nn.ReLU(inplace=True)\n        self.dropout1 = nn.Dropout(p=0.0)\n        \n        self.fc2 = nn.Linear(in_features=4096, out_features=4096)\n        self.relu7 = nn.ReLU(inplace=True)\n        self.dropout2 = nn.Dropout(p=0.0)\n        \n        self.fc3 = nn.Linear(in_features=4096, out_features=num_classes)\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: The input tensor, shape (batch_size, 3, 224, 224)\n        :return: The output tensor, shape (batch_size, num_classes)\n        \"\"\"\n        x = self.conv1(x)\n        x = self.relu1(x)\n        x = self.maxpool1(x)\n        \n        x = self.conv2(x)\n        x = self.relu2(x)\n        x = self.maxpool2(x)\n        \n        x = self.conv3(x)\n        x = self.relu3(x)\n        \n        x = self.conv4(x)\n        x = self.relu4(x)\n        \n        x = self.conv5(x)\n        x = self.relu5(x)\n        x = self.maxpool3(x)\n        \n        x = torch.flatten(x, 1)\n        \n        x = self.fc1(x)\n        x = self.relu6(x)\n        x = self.dropout1(x)\n        \n        x = self.fc2(x)\n        x = self.relu7(x)\n        x = self.dropout2(x)\n        \n        x = self.fc3(x)\n        \n        return x\n\n# Test code\nbatch_size = 1024\nnum_classes = 1000\n\ndef get_inputs():\n    return [torch.rand(batch_size, 3, 224, 224)]\n\ndef get_init_inputs():\n    return [num_classes]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 500.21 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 87.622 ms\n  2. aten::convolution: 87.622 ms\n  3. aten::_convolution: 87.622 ms\n  4. aten::cudnn_convolution: 80.966 ms\n  5. void precomputed_convolve_sgemm<float, 512, 6, 7, 4, 3, 5, 1, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long long, int, float, float, int, bool, bool, float const*, float const*, int*): 22.331 ms\n  6. volta_sgemm_32x128_nn: 22.181 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 87.62153959999999,
+              "cpu_time_ms": 0.9221931999999995,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 87.62153959999999,
+              "cpu_time_ms": 0.9054157999999999,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 87.62153959999999,
+              "cpu_time_ms": 0.8823808,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 80.96621759999996,
+              "cpu_time_ms": 0.7474252000000003,
+              "self_cuda_time_ms": 80.96621759999996,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void precomputed_convolve_sgemm<float, 512, 6, 7, 4, 3, 5, 1, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long long, int, float, float, int, bool, bool, float const*, float const*, int*)",
+              "cuda_time_ms": 22.3314402,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 22.3314402,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_32x128_nn",
+              "cuda_time_ms": 22.18118899999999,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 22.18118899999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::linear",
+              "cuda_time_ms": 8.809662799999977,
+              "cpu_time_ms": 0.13875820000000003,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::addmm",
+              "cuda_time_ms": 8.809662799999977,
+              "cpu_time_ms": 0.10775520000000013,
+              "self_cuda_time_ms": 8.809662799999977,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_64x64_nn",
+              "cuda_time_ms": 8.462107600000012,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 8.462107600000012,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x64_tn",
+              "cuda_time_ms": 8.082034599999973,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 8.082034599999973,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 500.2107723999996
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 500.21 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 87.622 ms\n  2. aten::convolution: 87.622 ms\n  3. aten::_convolution: 87.622 ms\n  4. aten::cudnn_convolution: 80.966 ms\n  5. void precomputed_convolve_sgemm<float, 512, 6, 7, 4, 3, 5, 1, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long long, int, float, float, int, bool, bool, float const*, float const*, int*): 22.331 ms\n  6. volta_sgemm_32x128_nn: 22.181 ms"
+      },
+      "6": {
+        "problem_id": 6,
+        "problem_name": "6_GoogleNetInceptionModule.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/6_GoogleNetInceptionModule.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    def __init__(self, in_channels, out_1x1, reduce_3x3, out_3x3, reduce_5x5, out_5x5, pool_proj):\n        \"\"\"\n        :param in_channels: Number of input channels\n        :param out_1x1: Number of output channels for the 1x1 convolution\n        :param reduce_3x3: Number of output channels for the 1x1 reduction before 3x3 convolution\n        :param out_3x3: Number of output channels for the 3x3 convolution\n        :param reduce_5x5: Number of output channels for the 1x1 reduction before 5x5 convolution\n        :param out_5x5: Number of output channels for the 5x5 convolution\n        :param pool_proj: Number of output channels for the pooling projection\n        \"\"\"\n        super(Model, self).__init__()\n        \n        # 1x1 convolution branch\n        self.branch1x1 = nn.Conv2d(in_channels, out_1x1, kernel_size=1)\n        \n        # 3x3 convolution branch\n        self.branch3x3 = nn.Sequential(\n            nn.Conv2d(in_channels, reduce_3x3, kernel_size=1),\n            nn.Conv2d(reduce_3x3, out_3x3, kernel_size=3, padding=1)\n        )\n        \n        # 5x5 convolution branch\n        self.branch5x5 = nn.Sequential(\n            nn.Conv2d(in_channels, reduce_5x5, kernel_size=1),\n            nn.Conv2d(reduce_5x5, out_5x5, kernel_size=5, padding=2)\n        )\n        \n        # Max pooling branch\n        self.branch_pool = nn.Sequential(\n            nn.MaxPool2d(kernel_size=3, stride=1, padding=1),\n            nn.Conv2d(in_channels, pool_proj, kernel_size=1)\n        )\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, in_channels, height, width)\n        :return: Output tensor, shape (batch_size, out_channels, height, width)\n        \"\"\"\n        branch1x1 = self.branch1x1(x)\n        branch3x3 = self.branch3x3(x)\n        branch5x5 = self.branch5x5(x)\n        branch_pool = self.branch_pool(x)\n        \n        outputs = [branch1x1, branch3x3, branch5x5, branch_pool]\n        return torch.cat(outputs, 1)\n\n# Test code\nin_channels = 480\nout_1x1 = 192\nreduce_3x3 = 96\nout_3x3 = 208\nreduce_5x5 = 16\nout_5x5 = 48\npool_proj = 64\nbatch_size = 10\nheight = 224\nwidth = 224\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, height, width)]\n\ndef get_init_inputs():\n    return [in_channels, out_1x1, reduce_3x3, out_3x3, reduce_5x5, out_5x5, pool_proj]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 169.67 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 27.392 ms\n  2. aten::convolution: 27.392 ms\n  3. aten::_convolution: 27.392 ms\n  4. aten::cudnn_convolution: 24.253 ms\n  5. aten::max_pool2d: 7.926 ms\n  6. aten::max_pool2d_with_indices: 7.926 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 27.39228780000001,
+              "cpu_time_ms": 0.6018137999999997,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 27.39228780000001,
+              "cpu_time_ms": 0.5873550000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 27.39228780000001,
+              "cpu_time_ms": 0.5652780000000002,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 24.25284880000001,
+              "cpu_time_ms": 0.4335557999999997,
+              "self_cuda_time_ms": 24.25284880000001,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool2d",
+              "cuda_time_ms": 7.926317600000006,
+              "cpu_time_ms": 0.02334240000000009,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool2d_with_indices",
+              "cuda_time_ms": 7.926317600000006,
+              "cpu_time_ms": 0.01984700000000007,
+              "self_cuda_time_ms": 7.926317600000006,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::(anonymous namespace)::max_pool_forward_nchw<float>(int, float const*, long, long, long, int, int, int, int, int, int, int, int, int, int, float*, long*)",
+              "cuda_time_ms": 7.926317600000006,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 7.926317600000006,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 7.347174399999997,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 7.347174399999997,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_64x64_nn",
+              "cuda_time_ms": 6.954474200000007,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 6.954474200000007,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cat",
+              "cuda_time_ms": 4.465768200000003,
+              "cpu_time_ms": 0.021910000000000034,
+              "self_cuda_time_ms": 4.465768200000003,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 169.67192820000005
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 169.67 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 27.392 ms\n  2. aten::convolution: 27.392 ms\n  3. aten::_convolution: 27.392 ms\n  4. aten::cudnn_convolution: 24.253 ms\n  5. aten::max_pool2d: 7.926 ms\n  6. aten::max_pool2d_with_indices: 7.926 ms"
+      },
+      "7": {
+        "problem_id": 7,
+        "problem_name": "7_GoogleNetInceptionV1.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/7_GoogleNetInceptionV1.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass InceptionModule(nn.Module):\n    def __init__(self, in_channels, out_1x1, reduce_3x3, out_3x3, reduce_5x5, out_5x5, pool_proj):\n        \"\"\"\n        :param in_channels: Number of input channels\n        :param out_1x1: Number of output channels for the 1x1 convolution\n        :param reduce_3x3: Number of output channels for the 1x1 reduction before 3x3 convolution\n        :param out_3x3: Number of output channels for the 3x3 convolution\n        :param reduce_5x5: Number of output channels for the 1x1 reduction before 5x5 convolution\n        :param out_5x5: Number of output channels for the 5x5 convolution\n        :param pool_proj: Number of output channels for the pooling projection\n        \"\"\"\n        super(InceptionModule, self).__init__()\n        \n        # 1x1 convolution branch\n        self.branch1x1 = nn.Conv2d(in_channels, out_1x1, kernel_size=1)\n        \n        # 3x3 convolution branch\n        self.branch3x3 = nn.Sequential(\n            nn.Conv2d(in_channels, reduce_3x3, kernel_size=1),\n            nn.Conv2d(reduce_3x3, out_3x3, kernel_size=3, padding=1)\n        )\n        \n        # 5x5 convolution branch\n        self.branch5x5 = nn.Sequential(\n            nn.Conv2d(in_channels, reduce_5x5, kernel_size=1),\n            nn.Conv2d(reduce_5x5, out_5x5, kernel_size=5, padding=2)\n        )\n        \n        # Max pooling branch\n        self.branch_pool = nn.Sequential(\n            nn.MaxPool2d(kernel_size=3, stride=1, padding=1),\n            nn.Conv2d(in_channels, pool_proj, kernel_size=1)\n        )\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, in_channels, height, width)\n        :return: Output tensor, shape (batch_size, out_channels, height, width)\n        \"\"\"\n        branch1x1 = self.branch1x1(x)\n        branch3x3 = self.branch3x3(x)\n        branch5x5 = self.branch5x5(x)\n        branch_pool = self.branch_pool(x)\n        \n        outputs = [branch1x1, branch3x3, branch5x5, branch_pool]\n        return torch.cat(outputs, 1)\n\nclass Model(nn.Module):\n    def __init__(self, num_classes=1000):\n        \"\"\"\n        :param num_classes: Number of output classes\n        \"\"\"\n        super(Model, self).__init__()\n        \n        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3)\n        self.maxpool1 = nn.MaxPool2d(3, stride=2, padding=1)\n        self.conv2 = nn.Conv2d(64, 64, kernel_size=1)\n        self.conv3 = nn.Conv2d(64, 192, kernel_size=3, padding=1)\n        self.maxpool2 = nn.MaxPool2d(3, stride=2, padding=1)\n        \n        self.inception3a = InceptionModule(192, 64, 96, 128, 16, 32, 32)\n        self.inception3b = InceptionModule(256, 128, 128, 192, 32, 96, 64)\n        self.maxpool3 = nn.MaxPool2d(3, stride=2, padding=1)\n        \n        self.inception4a = InceptionModule(480, 192, 96, 208, 16, 48, 64)\n        self.inception4b = InceptionModule(512, 160, 112, 224, 24, 64, 64)\n        self.inception4c = InceptionModule(512, 128, 128, 256, 24, 64, 64)\n        self.inception4d = InceptionModule(512, 112, 144, 288, 32, 64, 64)\n        self.inception4e = InceptionModule(528, 256, 160, 320, 32, 128, 128)\n        self.maxpool4 = nn.MaxPool2d(3, stride=2, padding=1)\n        \n        self.inception5a = InceptionModule(832, 256, 160, 320, 32, 128, 128)\n        self.inception5b = InceptionModule(832, 384, 192, 384, 48, 128, 128)\n        \n        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))\n        self.dropout = nn.Dropout(0.0)\n        self.fc = nn.Linear(1024, num_classes)\n    \n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, 3, height, width)\n        :return: Output tensor, shape (batch_size, num_classes)\n        \"\"\"\n        x = self.maxpool1(F.relu(self.conv1(x)))\n        x = F.relu(self.conv2(x))\n        x = self.maxpool2(F.relu(self.conv3(x)))\n        \n        x = self.inception3a(x)\n        x = self.inception3b(x)\n        x = self.maxpool3(x)\n        \n        x = self.inception4a(x)\n        x = self.inception4b(x)\n        x = self.inception4c(x)\n        x = self.inception4d(x)\n        x = self.inception4e(x)\n        x = self.maxpool4(x)\n        \n        x = self.inception5a(x)\n        x = self.inception5b(x)\n        \n        x = self.avgpool(x)\n        x = torch.flatten(x, 1)\n        x = self.dropout(x)\n        x = self.fc(x)\n        \n        return x\n\n# Test code\nbatch_size = 10\ninput_channels = 3\nheight = 224\nwidth = 224\nnum_classes = 1000\n\ndef get_inputs():\n    return [torch.rand(batch_size, input_channels, height, width)]\n\ndef get_init_inputs():\n    return [num_classes]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 24.18 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 4.316 ms\n  2. aten::convolution: 4.316 ms\n  3. aten::_convolution: 4.316 ms\n  4. aten::cudnn_convolution: 3.908 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 0.933 ms\n  6. volta_sgemm_128x32_nn: 0.735 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 4.315587800000002,
+              "cpu_time_ms": 4.272661600000005,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 4.315587800000002,
+              "cpu_time_ms": 4.1112838000000025,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 4.315587800000002,
+              "cpu_time_ms": 3.879781399999998,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 3.9075327999999994,
+              "cpu_time_ms": 2.6107799999999943,
+              "self_cuda_time_ms": 3.9075327999999994,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 0.9331108000000002,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.9331108000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "volta_sgemm_128x32_nn",
+              "cuda_time_ms": 0.7347579999999998,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.7347579999999998,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool2d",
+              "cuda_time_ms": 0.5395020000000006,
+              "cpu_time_ms": 0.2911151999999972,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::max_pool2d_with_indices",
+              "cuda_time_ms": 0.5395020000000006,
+              "cpu_time_ms": 0.2459656000000018,
+              "self_cuda_time_ms": 0.5395020000000006,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void at::native::(anonymous namespace)::max_pool_forward_nchw<float>(int, float const*, long, long, long, int, int, int, int, int, int, int, int, int, int, float*, long*)",
+              "cuda_time_ms": 0.5395020000000006,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.5395020000000006,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_128x32_sliced1x4_ldg4_relu_exp_medium_nhwc_tn_v1",
+              "cuda_time_ms": 0.5228937999999987,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.5228937999999987,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 24.183231800000016
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 24.18 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 4.316 ms\n  2. aten::convolution: 4.316 ms\n  3. aten::_convolution: 4.316 ms\n  4. aten::cudnn_convolution: 3.908 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 0.933 ms\n  6. volta_sgemm_128x32_nn: 0.735 ms"
+      },
+      "8": {
+        "problem_id": 8,
+        "problem_name": "8_ResNetBasicBlock.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/8_ResNetBasicBlock.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Model(nn.Module):\n    expansion = 1\n\n    def __init__(self, in_channels, out_channels, stride=1):\n        \"\"\"\n        :param in_channels: Number of input channels\n        :param out_channels: Number of output channels\n        :param stride: Stride for the first convolutional layer\n        :param downsample: Downsample layer for the shortcut connection\n        \"\"\"\n        super(Model, self).__init__()\n        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)\n        self.bn1 = nn.BatchNorm2d(out_channels)\n        self.relu = nn.ReLU(inplace=True)\n        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)\n        self.bn2 = nn.BatchNorm2d(out_channels)\n        self.downsample = nn.Sequential(\n            nn.Conv2d(in_channels, out_channels * self.expansion, kernel_size=1, stride=stride, bias=False),\n            nn.BatchNorm2d(out_channels * self.expansion),\n        )\n        self.stride = stride\n\n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, in_channels, height, width)\n        :return: Output tensor, shape (batch_size, out_channels, height, width)\n        \"\"\"\n        identity = x\n\n        out = self.conv1(x)\n        out = self.bn1(out)\n        out = self.relu(out)\n\n        out = self.conv2(out)\n        out = self.bn2(out)\n\n        if self.downsample is not None:\n            identity = self.downsample(x)\n\n        out += identity\n        out = self.relu(out)\n\n        return out\n    \n# Test code\nin_channels = 3\nout_channels = 64\nstride = 1\nbatch_size = 10\nnum_classes = 1000\n\ndef get_inputs():\n    return [torch.rand(batch_size, in_channels, 224, 224)]\n\ndef get_init_inputs():\n    return [in_channels, out_channels, stride]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 17.05 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 1.948 ms\n  2. aten::convolution: 1.948 ms\n  3. aten::_convolution: 1.948 ms\n  4. aten::cudnn_convolution: 1.948 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 1.541 ms\n  6. aten::batch_norm: 1.122 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 1.9476482000000002,
+              "cpu_time_ms": 0.3658624,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 1.9476482000000002,
+              "cpu_time_ms": 0.3576450000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 1.9476482000000002,
+              "cpu_time_ms": 0.3460988,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 1.9476482000000002,
+              "cpu_time_ms": 0.3323668,
+              "self_cuda_time_ms": 1.9476482000000002,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 1.5413866,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 1.5413866,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::batch_norm",
+              "cuda_time_ms": 1.1223506000000003,
+              "cpu_time_ms": 0.1614085999999997,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_batch_norm_impl_index",
+              "cuda_time_ms": 1.1223506000000003,
+              "cpu_time_ms": 0.1551772,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_batch_norm",
+              "cuda_time_ms": 1.1223506000000003,
+              "cpu_time_ms": 0.14376999999999998,
+              "self_cuda_time_ms": 1.1223506000000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void cudnn::bn_fw_inf_1C11_kernel_NCHW<float, float, true, 1>(float, float, cudnnTensorStruct, float const*, cudnnTensorStruct, float*, cudnnTensorStruct, float const*, float const*, float const*, float const*, float)",
+              "cuda_time_ms": 1.1223506000000003,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 1.1223506000000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::relu_",
+              "cuda_time_ms": 0.6282119999999993,
+              "cpu_time_ms": 0.03459079999999999,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 17.051189400000005
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 17.05 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 1.948 ms\n  2. aten::convolution: 1.948 ms\n  3. aten::_convolution: 1.948 ms\n  4. aten::cudnn_convolution: 1.948 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 1.541 ms\n  6. aten::batch_norm: 1.122 ms"
+      },
+      "9": {
+        "problem_id": 9,
+        "problem_name": "9_ResNet18.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/9_ResNet18.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass BasicBlock(nn.Module):\n    expansion = 1\n\n    def __init__(self, in_channels, out_channels, stride=1, downsample=None):\n        \"\"\"\n        :param in_channels: Number of input channels\n        :param out_channels: Number of output channels\n        :param stride: Stride for the first convolutional layer\n        :param downsample: Downsample layer for the shortcut connection\n        \"\"\"\n        super(BasicBlock, self).__init__()\n        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)\n        self.bn1 = nn.BatchNorm2d(out_channels)\n        self.relu = nn.ReLU(inplace=True)\n        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)\n        self.bn2 = nn.BatchNorm2d(out_channels)\n        self.downsample = downsample\n        self.stride = stride\n\n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, in_channels, height, width)\n        :return: Output tensor, shape (batch_size, out_channels, height, width)\n        \"\"\"\n        identity = x\n\n        out = self.conv1(x)\n        out = self.bn1(out)\n        out = self.relu(out)\n\n        out = self.conv2(out)\n        out = self.bn2(out)\n\n        if self.downsample is not None:\n            identity = self.downsample(x)\n\n        out += identity\n        out = self.relu(out)\n\n        return out\n\nclass Model(nn.Module):\n    def __init__(self, num_classes=1000):\n        \"\"\"\n        :param num_classes: Number of output classes\n        \"\"\"\n        super(Model, self).__init__()\n        self.in_channels = 64\n\n        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)\n        self.bn1 = nn.BatchNorm2d(64)\n        self.relu = nn.ReLU(inplace=True)\n        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)\n\n        self.layer1 = self._make_layer(BasicBlock, 64, 2, stride=1)\n        self.layer2 = self._make_layer(BasicBlock, 128, 2, stride=2)\n        self.layer3 = self._make_layer(BasicBlock, 256, 2, stride=2)\n        self.layer4 = self._make_layer(BasicBlock, 512, 2, stride=2)\n\n        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))\n        self.fc = nn.Linear(512 * BasicBlock.expansion, num_classes)\n\n    def _make_layer(self, block, out_channels, blocks, stride=1):\n        downsample = None\n        if stride != 1 or self.in_channels != out_channels * block.expansion:\n            downsample = nn.Sequential(\n                nn.Conv2d(self.in_channels, out_channels * block.expansion, kernel_size=1, stride=stride, bias=False),\n                nn.BatchNorm2d(out_channels * block.expansion),\n            )\n\n        layers = []\n        layers.append(block(self.in_channels, out_channels, stride, downsample))\n        self.in_channels = out_channels * block.expansion\n        for _ in range(1, blocks):\n            layers.append(block(self.in_channels, out_channels))\n\n        return nn.Sequential(*layers)\n\n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, 3, height, width)\n        :return: Output tensor, shape (batch_size, num_classes)\n        \"\"\"\n        x = self.conv1(x)\n        x = self.bn1(x)\n        x = self.relu(x)\n        x = self.maxpool(x)\n\n        x = self.layer1(x)\n        x = self.layer2(x)\n        x = self.layer3(x)\n        x = self.layer4(x)\n\n        x = self.avgpool(x)\n        x = torch.flatten(x, 1)\n        x = self.fc(x)\n\n        return x\n\n# Test code\nbatch_size = 2\nnum_classes = 1000\ninput_shape = (batch_size, 3, 224, 224)\n\ndef get_inputs():\n    return [torch.rand(input_shape)]\n\ndef get_init_inputs():\n    return [num_classes]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 6.94 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 1.255 ms\n  2. aten::convolution: 1.255 ms\n  3. aten::_convolution: 1.255 ms\n  4. aten::cudnn_convolution: 1.255 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 0.713 ms\n  6. _5x_cudnn_volta_scudnn_128x32_sliced1x4_ldg4_relu_exp_medium_nhwc_tn_v1: 0.175 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 1.2549811999999942,
+              "cpu_time_ms": 1.1765254000000007,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 1.2549811999999942,
+              "cpu_time_ms": 1.1236434000000002,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 1.2549811999999942,
+              "cpu_time_ms": 1.0489554000000016,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 1.2549811999999942,
+              "cpu_time_ms": 0.9602330000000003,
+              "self_cuda_time_ms": 1.2549811999999942,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 0.7128057999999986,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.7128057999999986,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_128x32_sliced1x4_ldg4_relu_exp_medium_nhwc_tn_v1",
+              "cuda_time_ms": 0.17501299999999964,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.17501299999999964,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void cudnn::winograd::generateWinogradTilesKernel<0, float, float>(cudnn::winograd::GenerateWinogradTilesParams<float, float>)",
+              "cuda_time_ms": 0.15597219999999734,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 0.15597219999999734,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::batch_norm",
+              "cuda_time_ms": 0.09585860000000239,
+              "cpu_time_ms": 1.0303090000000001,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_batch_norm_impl_index",
+              "cuda_time_ms": 0.09585860000000239,
+              "cpu_time_ms": 0.9903914000000006,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_batch_norm",
+              "cuda_time_ms": 0.09585860000000239,
+              "cpu_time_ms": 0.9314009999999977,
+              "self_cuda_time_ms": 0.09585860000000239,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 6.937658399999985
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 6.94 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 1.255 ms\n  2. aten::convolution: 1.255 ms\n  3. aten::_convolution: 1.255 ms\n  4. aten::cudnn_convolution: 1.255 ms\n  5. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 0.713 ms\n  6. _5x_cudnn_volta_scudnn_128x32_sliced1x4_ldg4_relu_exp_medium_nhwc_tn_v1: 0.175 ms"
+      },
+      "10": {
+        "problem_id": 10,
+        "problem_name": "10_ResNet101.py",
+        "reference_arch_path": "/work/b11902044/final/KernelBench/KernelBench/level3/10_ResNet101.py",
+        "prompt": "You write custom CUDA operators to replace the pytorch operators in the given architecture to get speedups.\n\nYou have complete freedom to choose the set of operators you want to replace. You may make the decision to replace some operators with custom CUDA operators and leave others unchanged. You may replace multiple operators with custom implementations, consider operator fusion opportunities (combining multiple operators into a single kernel, for example, combining matmul+relu), or algorithmic changes (such as online softmax). You are only limited by your imagination.\n\nYou are given the following architecture:\n\n\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\n\nclass Bottleneck(nn.Module):\n    expansion = 4\n\n    def __init__(self, in_channels, out_channels, stride=1, downsample=None):\n        \"\"\"\n        :param in_channels: Number of input channels\n        :param out_channels: Number of output channels\n        :param stride: Stride for the first convolutional layer\n        :param downsample: Downsample layer for the shortcut connection\n        \"\"\"\n        super(Bottleneck, self).__init__()\n        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)\n        self.bn1 = nn.BatchNorm2d(out_channels)\n        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)\n        self.bn2 = nn.BatchNorm2d(out_channels)\n        self.conv3 = nn.Conv2d(out_channels, out_channels * self.expansion, kernel_size=1, bias=False)\n        self.bn3 = nn.BatchNorm2d(out_channels * self.expansion)\n        self.relu = nn.ReLU(inplace=True)\n        self.downsample = downsample\n        self.stride = stride\n\n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, in_channels, height, width)\n        :return: Output tensor, shape (batch_size, out_channels * expansion, height, width)\n        \"\"\"\n        identity = x\n\n        out = self.conv1(x)\n        out = self.bn1(out)\n        out = self.relu(out)\n\n        out = self.conv2(out)\n        out = self.bn2(out)\n        out = self.relu(out)\n\n        out = self.conv3(out)\n        out = self.bn3(out)\n\n        if self.downsample is not None:\n            identity = self.downsample(x)\n\n        out += identity\n        out = self.relu(out)\n\n        return out\n\nclass Model(nn.Module):\n    def __init__(self, layers, num_classes=1000):\n        \"\"\"\n        :param block: Type of block to use (BasicBlock or Bottleneck)\n        :param layers: List of integers specifying the number of blocks in each layer\n        :param num_classes: Number of output classes\n        \"\"\"\n        super(Model, self).__init__()\n        self.in_channels = 64\n\n        self.conv1 = nn.Conv2d(3, self.in_channels, kernel_size=7, stride=2, padding=3, bias=False)\n        self.bn1 = nn.BatchNorm2d(self.in_channels)\n        self.relu = nn.ReLU(inplace=True)\n        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)\n\n        block = Bottleneck\n\n        self.layer1 = self._make_layer(block, 64, layers[0])\n        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)\n        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)\n        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)\n\n        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))\n        self.fc = nn.Linear(512 * block.expansion, num_classes)\n\n    def _make_layer(self, block, out_channels, blocks, stride=1):\n        downsample = None\n        if stride != 1 or self.in_channels != out_channels * block.expansion:\n            downsample = nn.Sequential(\n                nn.Conv2d(self.in_channels, out_channels * block.expansion, kernel_size=1, stride=stride, bias=False),\n                nn.BatchNorm2d(out_channels * block.expansion),\n            )\n\n        layers = []\n        layers.append(block(self.in_channels, out_channels, stride, downsample))\n        self.in_channels = out_channels * block.expansion\n        for _ in range(1, blocks):\n            layers.append(block(self.in_channels, out_channels))\n\n        return nn.Sequential(*layers)\n\n    def forward(self, x):\n        \"\"\"\n        :param x: Input tensor, shape (batch_size, 3, height, width)\n        :return: Output tensor, shape (batch_size, num_classes)\n        \"\"\"\n        x = self.conv1(x)\n        x = self.bn1(x)\n        x = self.relu(x)\n        x = self.maxpool(x)\n\n        x = self.layer1(x)\n        x = self.layer2(x)\n        x = self.layer3(x)\n        x = self.layer4(x)\n\n        x = self.avgpool(x)\n        x = torch.flatten(x, 1)\n        x = self.fc(x)\n\n        return x\n\n# Test code\nbatch_size = 10\nheight = 224\nwidth = 224\nlayers = [3, 4, 23, 3]\nnum_classes = 1000\n\ndef get_inputs():\n    return [torch.rand(batch_size, 3, height, width)]\n\ndef get_init_inputs():\n    return [layers, num_classes]\n\nNote: The kernels should be optimized for FP32 (32-bit floating point) precision.\n\nHere is GPU profiling information for the reference PyTorch implementation (measured on the target GPU):\n\nTotal CUDA time (reference forward): 84.10 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 13.633 ms\n  2. aten::convolution: 13.633 ms\n  3. aten::_convolution: 13.633 ms\n  4. aten::cudnn_convolution: 13.633 ms\n  5. _5x_cudnn_volta_scudnn_128x128_relu_small_nn_v1: 3.422 ms\n  6. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 2.971 ms\n\nUse this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.\n\n\nOptimize the architecture named Model with custom CUDA operators! Name your optimized output architecture ModelNew. Output the new code in codeblocks. Please generate real code, NOT pseudocode, make sure the code compiles and is fully functional. Just output the new model code, no other text, and NO testing code!\n",
+        "profiling": {
+          "top_ops": [
+            {
+              "name": "aten::conv2d",
+              "cuda_time_ms": 13.632712599999959,
+              "cpu_time_ms": 5.024353000000008,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::convolution",
+              "cuda_time_ms": 13.632712599999959,
+              "cpu_time_ms": 4.769462000000009,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_convolution",
+              "cuda_time_ms": 13.632712599999959,
+              "cpu_time_ms": 4.402168199999984,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_convolution",
+              "cuda_time_ms": 13.632712599999959,
+              "cpu_time_ms": 3.942205799999988,
+              "self_cuda_time_ms": 13.632712599999959,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_128x128_relu_small_nn_v1",
+              "cuda_time_ms": 3.422265000000003,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 3.422265000000003,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "_5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1",
+              "cuda_time_ms": 2.9710945999999865,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 2.9710945999999865,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "void precomputed_convolve_sgemm<float, 512, 6, 7, 4, 3, 5, 1, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long long, int, float, float, int, bool, bool, float const*, float const*, int*)",
+              "cuda_time_ms": 2.621336199999999,
+              "cpu_time_ms": 0.0,
+              "self_cuda_time_ms": 2.621336199999999,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::batch_norm",
+              "cuda_time_ms": 2.1353330000000157,
+              "cpu_time_ms": 5.288569199999991,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::_batch_norm_impl_index",
+              "cuda_time_ms": 2.1353330000000157,
+              "cpu_time_ms": 5.085373799999966,
+              "self_cuda_time_ms": 0.0,
+              "cuda_memory_usage_mb": 0.0
+            },
+            {
+              "name": "aten::cudnn_batch_norm",
+              "cuda_time_ms": 2.1353330000000157,
+              "cpu_time_ms": 4.792440599999972,
+              "self_cuda_time_ms": 2.1353330000000157,
+              "cuda_memory_usage_mb": 0.0
+            }
+          ],
+          "total_cuda_time_ms": 84.1022611999999
+        },
+        "profiling_summary": "Total CUDA time (reference forward): 84.10 ms\n\nTop operators by CUDA time (self time when available):\n  1. aten::conv2d: 13.633 ms\n  2. aten::convolution: 13.633 ms\n  3. aten::_convolution: 13.633 ms\n  4. aten::cudnn_convolution: 13.633 ms\n  5. _5x_cudnn_volta_scudnn_128x128_relu_small_nn_v1: 3.422 ms\n  6. _5x_cudnn_volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1: 2.971 ms"
+      }
+    }
+  }
+}

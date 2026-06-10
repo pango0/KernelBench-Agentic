@@ -1,0 +1,94 @@
+{
+    "level3": {
+        "1_MLP.py": {
+            "mean": 12.8,
+            "std": 0.2,
+            "min": 12.7,
+            "max": 13.5,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "2_ShallowWideMLP.py": {
+            "mean": 39.9,
+            "std": 0.371,
+            "min": 39.1,
+            "max": 41.6,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "3_DeepNarrowMLP.py": {
+            "mean": 5.96,
+            "std": 0.101,
+            "min": 5.81,
+            "max": 6.18,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "4_LeNet5.py": {
+            "mean": 1.91,
+            "std": 0.0172,
+            "min": 1.89,
+            "max": 2.02,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "5_AlexNet.py": {
+            "mean": 108.0,
+            "std": 0.572,
+            "min": 106.0,
+            "max": 109.0,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "6_GoogleNetInceptionModule.py": {
+            "mean": 39.8,
+            "std": 0.46,
+            "min": 39.4,
+            "max": 42.1,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "7_GoogleNetInceptionV1.py": {
+            "mean": 5.33,
+            "std": 0.179,
+            "min": 5.21,
+            "max": 5.7,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "8_ResNetBasicBlock.py": {
+            "mean": 4.71,
+            "std": 0.0276,
+            "min": 4.69,
+            "max": 4.97,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "9_ResNet18.py": {
+            "mean": 1.59,
+            "std": 0.0233,
+            "min": 1.57,
+            "max": 1.72,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        },
+        "10_ResNet101.py": {
+            "mean": 19.0,
+            "std": 0.126,
+            "min": 18.9,
+            "max": 19.3,
+            "num_trials": 100,
+            "hardware": "Tesla V100-SXM2-32GB",
+            "device": "cuda:2"
+        }
+    }
+}

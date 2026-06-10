@@ -1,0 +1,6 @@
+turn=0
+compiled=True
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=10.5
+runtime_error=CUDA out of memory. Tried to allocate 4096.00 GiB. GPU 1 has a total capacity of 31.74 GiB of which 23.40 GiB is free. Including non-PyTorch memory, this process has 8.34 GiB memory in use. Of the ...

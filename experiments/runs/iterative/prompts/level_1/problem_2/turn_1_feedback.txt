@@ -1,0 +1,6 @@
+turn=1
+compiled=True
+correctness=False
+runtime_ms=-1.0
+ref_runtime_ms=10.8
+runtime_error="'__name__' not in globals"
