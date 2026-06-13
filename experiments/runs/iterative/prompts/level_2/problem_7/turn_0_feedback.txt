@@ -2,5 +2,5 @@ turn=0
 compiled=True
 correctness=False
 runtime_ms=-1.0
-ref_runtime_ms=29.4
+ref_runtime_ms=28.7
 runtime_error='ModelNew' object has no attribute 'weight'

@@ -58,7 +58,7 @@ turn=0
 compiled=True
 correctness=False
 runtime_ms=-1.0
-ref_runtime_ms=17.4
+ref_runtime_ms=16.3
 runtime_error=Input type (torch.cuda.FloatTensor) and weight type (torch.FloatTensor) should be the same
 
 Previous submission:

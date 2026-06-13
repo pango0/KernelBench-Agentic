@@ -51,9 +51,9 @@ Iterative refinement (turn 2). Your previous submission was tested on a GPU:
 turn=1
 compiled=True
 correctness=True
-runtime_ms=21.8
-ref_runtime_ms=21.0
-speedup=0.9633
+runtime_ms=21.6
+ref_runtime_ms=20.8
+speedup=0.9630
 
 Previous submission:
 ```python
@@ -85,14 +85,14 @@ class BatchMatMulFunction(Function):
 
 class ModelNew(nn.Module):
     """
-    Optimized version of the original Model using custom CUDA operators.
+    Optimized version using custom CUDA operators for batched matrix multiplication.
     """
     def __init__(self):
         super(ModelNew, self).__init__()
 
     def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
         """
-        Performs batched matrix multiplication using custom CUDA operators.
+        Performs batched matrix multiplication.
 
         Args:
             A: Input tensor of shape (batch_size, m, k).

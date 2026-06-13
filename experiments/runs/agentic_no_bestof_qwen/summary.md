@@ -1,0 +1,64 @@
+# Qwen2.5-Coder-7B-Instruct x − best-of-n (greedy, n=1)
+
+- Run dir: `agentic_no_bestof_qwen`  |  Hardware: V100_SXM2_32GB  |  Tasks: 30
+
+## Overall
+
+| metric | value |
+|---|---|
+| Compilation rate | 23.3% (7/30) |
+| Correctness rate | 3.3% (1/30) |
+| Faster than baseline (fast_1) | 0.0% (0/30) |
+| Geo-mean speedup (correct only) | 0.950x |
+
+## Per level
+
+| level | correct | compile% | correct% | geo-mean speedup | fast_1.0 |
+|---|---|---|---|---|---|
+| 1 | 1/10 | 50% | 10% | 0.937x | 0.0 |
+| 2 | 0/10 | 10% | 0% | 0.000x | 0.0 |
+| 3 | 0/10 | 10% | 0% | 0.000x | 0.0 |
+
+## Error taxonomy
+
+| category | count |
+|---|---|
+| compilation | 23 |
+| hallucinated_api | 3 |
+| wrong_output | 3 |
+| slow | 1 |
+
+## Per-problem
+
+| L | P | name | compiled | correct | speedup | category |
+|---|---|---|---|---|---|---|
+| 1 | 1 | 1_Square_matrix_multiplication_.py | N | N | - | compilation |
+| 1 | 2 | 2_Standard_matrix_multiplication_. | N | N | - | compilation |
+| 1 | 3 | 3_Batched_matrix_multiplication.py | Y | Y | 0.95x | slow |
+| 1 | 4 | 4_Matrix_vector_multiplication_.py | N | N | - | compilation |
+| 1 | 5 | 5_Matrix_scalar_multiplication.py | Y | N | - | hallucinated_api |
+| 1 | 6 | 6_Matmul_with_large_K_dimension_.p | Y | N | - | hallucinated_api |
+| 1 | 7 | 7_Matmul_with_small_K_dimension_.p | N | N | - | compilation |
+| 1 | 8 | 8_Matmul_with_irregular_shapes_.py | Y | N | - | wrong_output |
+| 1 | 9 | 9_Tall_skinny_matrix_multiplicatio | Y | N | - | hallucinated_api |
+| 1 | 10 | 10_3D_tensor_matrix_multiplication | N | N | - | compilation |
+| 2 | 1 | 1_Conv2D_ReLU_BiasAdd.py | N | N | - | compilation |
+| 2 | 2 | 2_ConvTranspose2d_BiasAdd_Clamp_Sc | N | N | - | compilation |
+| 2 | 3 | 3_ConvTranspose3d_Sum_LayerNorm_Av | N | N | - | compilation |
+| 2 | 4 | 4_Conv2d_Mish_Mish.py | N | N | - | compilation |
+| 2 | 5 | 5_ConvTranspose2d_Subtract_Tanh.py | N | N | - | compilation |
+| 2 | 6 | 6_Conv3d_Softmax_MaxPool_MaxPool.p | N | N | - | compilation |
+| 2 | 7 | 7_Conv3d_ReLU_LeakyReLU_GELU_Sigmo | N | N | - | compilation |
+| 2 | 8 | 8_Conv3d_Divide_Max_GlobalAvgPool_ | Y | N | - | wrong_output |
+| 2 | 9 | 9_Matmul_Subtract_Multiply_ReLU.py | N | N | - | compilation |
+| 2 | 10 | 10_ConvTranspose2d_MaxPool_Hardtan | N | N | - | compilation |
+| 3 | 1 | 1_MLP.py | N | N | - | compilation |
+| 3 | 2 | 2_ShallowWideMLP.py | N | N | - | compilation |
+| 3 | 3 | 3_DeepNarrowMLP.py | N | N | - | compilation |
+| 3 | 4 | 4_LeNet5.py | N | N | - | compilation |
+| 3 | 5 | 5_AlexNet.py | N | N | - | compilation |
+| 3 | 6 | 6_GoogleNetInceptionModule.py | N | N | - | compilation |
+| 3 | 7 | 7_GoogleNetInceptionV1.py | N | N | - | compilation |
+| 3 | 8 | 8_ResNetBasicBlock.py | Y | N | - | wrong_output |
+| 3 | 9 | 9_ResNet18.py | N | N | - | compilation |
+| 3 | 10 | 10_ResNet101.py | N | N | - | compilation |

@@ -60,7 +60,7 @@ turn=1
 compiled=True
 correctness=False
 runtime_ms=-1.0
-ref_runtime_ms=39.2
+ref_runtime_ms=39.7
 runtime_error=mat1 and mat2 shapes cannot be multiplied (128x16384 and 32768x16384)
 
 Previous submission:
@@ -77,19 +77,14 @@ class CustomMatMulReLUFunction(Function):
     def forward(ctx, input, weight):
         ctx.save_for_backward(input, weight)
         output = torch.matmul(input, weight)
-        ctx.mark_non_differentiable(output)
         return F.relu(output)
 
     @staticmethod
     @custom_bwd
     def backward(ctx, grad_output):
         input, weight = ctx.saved_tensors
-        grad_input = None
-        if ctx.needs_input_grad[0]:
-            grad_input = torch.matmul(grad_output, weight.t())
-        grad_weight = None
-        if ctx.needs_input_grad[1]:
-            grad_weight = torch.matmul(input.t(), grad_output)
+        grad_input = torch.matmul(grad_output, weight.t())
+        grad_weight = torch.matmul(input.t(), grad_output)
         return grad_input, grad_weight
 
 class CustomLinear(nn.Module):

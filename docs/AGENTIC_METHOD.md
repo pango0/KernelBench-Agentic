@@ -159,7 +159,9 @@ ablatable so its value can be measured.
   into a prioritized, actionable directive. *Ablation:* `agentic_no_feedback` (raw
   evaluation text is fed back instead).
 - **Best-of-n sampling.** Trades compute for quality by sampling several candidates per
-  turn and keeping the best under real evaluation. *Ablation:* `agentic_bestof2`.
+  turn and keeping the best under real evaluation. Part of the full-system backbone
+  (n=4). *Ablation:* `agentic_no_bestof` (greedy, n=1); *sweep:* `agentic_bestof2` and
+  `agentic_bestof8` map the n=1→2→4→8 compute-for-quality curve.
 - **Iterative refinement with execution feedback.** The loop itself. *Ablation:*
   `agentic_single_turn` (one shot, no loop).
 
@@ -167,18 +169,22 @@ ablatable so its value can be measured.
 
 ## 6. Ablation study
 
-Run on the local model over the 30-task subset (levels 1–3 × first 10). Each variant
-flips one component; compare to the full agentic system. Variants
+Run on the local model over the 30-task subset (levels 1–3 × first 10). Two studies
+share one backbone (the full system = all agents on, best-of-4). The **component
+ablations** flip exactly one agent off against that backbone; the **best-of-n sweep**
+holds all agents on and varies only the sampling width. Variants
 (`experiments/config.py:AGENTIC_ABLATIONS`):
 
 | variant                | flips off / changes              | isolates                         |
 |------------------------|----------------------------------|----------------------------------|
-| `agentic` (full)       | —                                | the complete system              |
+| `agentic` (full)       | — (all agents, best-of-4)        | the complete system              |
 | `agentic_no_rag`       | RAG Researcher + Documentation   | value of retrieval grounding     |
 | `agentic_no_analyzer`  | Code Analyzer                    | value of analysis/planning + queries |
 | `agentic_no_feedback`  | Feedback Analyzer (raw text only)| value of analytic vs raw feedback|
 | `agentic_single_turn`  | loop (`max_turns=1`)             | value of iteration               |
-| `agentic_bestof2`      | best-of-1 → best-of-2            | compute-for-quality trade-off    |
+| `agentic_no_bestof`    | best-of-4 → greedy (n=1)         | value of best-of-n sampling      |
+| `agentic_bestof2`      | best-of-n = 2 (sweep point)      | compute-for-quality curve        |
+| `agentic_bestof8`      | best-of-n = 8 (sweep point)      | compute-for-quality curve        |
 
 External baselines already in the matrix contextualize the ablations: **zero-shot**
 (no agents, one shot), **guided** (profiling-enriched prompt, one shot), and

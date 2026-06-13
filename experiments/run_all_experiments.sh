@@ -3,8 +3,9 @@
 # agentic ablation study, then build the report.
 #
 #   core methods : zeroshot, guided, iterative, agentic        (model: qwen)
-#   ablations    : agentic_no_rag, agentic_no_analyzer,
-#                  agentic_no_feedback, agentic_single_turn, agentic_bestof2
+#   component abl: agentic_no_rag, agentic_no_analyzer, agentic_no_feedback,
+#                  agentic_single_turn, agentic_no_bestof   (best-of-4 backbone)
+#   best-of-n    : agentic_bestof2, agentic_bestof8 (+ no_bestof=n1, agentic=n4)
 #
 # The agentic method is the multi-agent loop documented in docs/AGENTIC_METHOD.md
 # (Code Analyzer -> RAG Researcher <-> Documentation -> Kernel Generator ->
@@ -45,7 +46,7 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 MODEL="${MODEL:-qwen}"
 CORE_METHODS="zeroshot guided iterative agentic"
-ABLATIONS="agentic_no_rag agentic_no_analyzer agentic_no_feedback agentic_single_turn agentic_bestof2"
+ABLATIONS="agentic_no_rag agentic_no_analyzer agentic_no_feedback agentic_single_turn agentic_no_bestof agentic_bestof2 agentic_bestof8"
 METHODS="${METHODS:-${CORE_METHODS} ${ABLATIONS}}"
 LEVELS="${LEVELS:-1,2,3}"
 

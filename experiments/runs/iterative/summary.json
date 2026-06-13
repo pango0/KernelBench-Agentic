@@ -15,11 +15,11 @@
   "overall": {
     "compiled": 20,
     "correct": 9,
-    "faster_than_baseline": 2,
+    "faster_than_baseline": 3,
     "compilation_rate": 0.6666666666666666,
     "correctness_rate": 0.3,
-    "fast_1_rate": 0.06666666666666667,
-    "geo_mean_speedup_correct": 0.9797720180451853
+    "fast_1_rate": 0.1,
+    "geo_mean_speedup_correct": 0.9810036877572113
   },
   "per_level": {
     "1": {
@@ -28,7 +28,7 @@
       "correct_count": 9,
       "compilation_rate": 1.0,
       "correctness_rate": 0.9,
-      "geo_mean_speedup": 0.9666693571294123,
+      "geo_mean_speedup": 0.9709387721311478,
       "fast_p": {
         "0.0": 0.9,
         "0.5": 0.9,
@@ -80,7 +80,7 @@
     "wrong_output": 4,
     "runtime": 0,
     "timeout": 0,
-    "slow": 7,
+    "slow": 6,
     "unknown": 0
   },
   "per_problem": [
@@ -91,9 +91,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 9.62,
-      "ref_runtime_ms": 9.49,
-      "speedup": 0.9864864864864866,
+      "runtime_ms": 9.7,
+      "ref_runtime_ms": 9.57,
+      "speedup": 0.98659793814433,
       "category": "slow",
       "num_turns": 3
     },
@@ -104,9 +104,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 9.7,
-      "ref_runtime_ms": 9.35,
-      "speedup": 0.9639175257731959,
+      "runtime_ms": 9.45,
+      "ref_runtime_ms": 9.21,
+      "speedup": 0.9746031746031748,
       "category": "slow",
       "num_turns": 3
     },
@@ -117,9 +117,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 21.6,
-      "ref_runtime_ms": 21.0,
-      "speedup": 0.9722222222222222,
+      "runtime_ms": 21.5,
+      "ref_runtime_ms": 20.9,
+      "speedup": 0.9720930232558139,
       "category": "slow",
       "num_turns": 3
     },
@@ -131,7 +131,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 10.6,
+      "ref_runtime_ms": 10.5,
       "speedup": null,
       "category": "memory",
       "num_turns": 3
@@ -156,10 +156,10 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 4.65,
-      "ref_runtime_ms": 4.64,
-      "speedup": 0.9978494623655912,
-      "category": "slow",
+      "runtime_ms": 4.56,
+      "ref_runtime_ms": 4.56,
+      "speedup": 1.0,
+      "category": "correct",
       "num_turns": 3
     },
     {
@@ -169,9 +169,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 10.6,
+      "runtime_ms": 10.5,
       "ref_runtime_ms": 10.6,
-      "speedup": 1.0,
+      "speedup": 1.0095238095238095,
       "category": "correct",
       "num_turns": 3
     },
@@ -182,9 +182,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 20.3,
-      "ref_runtime_ms": 20.3,
-      "speedup": 1.0,
+      "runtime_ms": 20.4,
+      "ref_runtime_ms": 20.5,
+      "speedup": 1.0049019607843137,
       "category": "correct",
       "num_turns": 3
     },
@@ -195,9 +195,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 6.61,
-      "ref_runtime_ms": 6.48,
-      "speedup": 0.9803328290468987,
+      "runtime_ms": 6.62,
+      "ref_runtime_ms": 6.42,
+      "speedup": 0.9697885196374622,
       "category": "slow",
       "num_turns": 3
     },
@@ -208,9 +208,9 @@
       "gen_status": "success",
       "compiled": true,
       "correct": true,
-      "runtime_ms": 3.69,
+      "runtime_ms": 3.71,
       "ref_runtime_ms": 3.49,
-      "speedup": 0.94579945799458,
+      "speedup": 0.940700808625337,
       "category": "slow",
       "num_turns": 3
     },
@@ -261,7 +261,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 49.7,
+      "ref_runtime_ms": 49.9,
       "speedup": null,
       "category": "shape_mismatch",
       "num_turns": 3
@@ -287,7 +287,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 2.52,
+      "ref_runtime_ms": 2.53,
       "speedup": null,
       "category": "shape_mismatch",
       "num_turns": 3
@@ -300,7 +300,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 28.1,
+      "ref_runtime_ms": 28.0,
       "speedup": null,
       "category": "hallucinated_api",
       "num_turns": 3
@@ -365,7 +365,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 39.3,
+      "ref_runtime_ms": 38.7,
       "speedup": null,
       "category": "shape_mismatch",
       "num_turns": 3
@@ -391,7 +391,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 2.04,
+      "ref_runtime_ms": 2.0,
       "speedup": null,
       "category": "wrong_output",
       "num_turns": 3
@@ -417,7 +417,7 @@
       "compiled": true,
       "correct": false,
       "runtime_ms": -1.0,
-      "ref_runtime_ms": 39.4,
+      "ref_runtime_ms": 39.3,
       "speedup": null,
       "category": "wrong_output",
       "num_turns": 3
@@ -475,12 +475,12 @@
       "num_turns": 3
     }
   ],
-  "summarized_at": "2026-06-10T13:55:38.477975+00:00",
+  "summarized_at": "2026-06-12T09:06:38.814057+00:00",
   "gen_meta": {
     "method": "iterative",
     "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
     "max_turns": 3,
-    "created_at": "2026-06-10T13:37:17.866911+00:00",
+    "created_at": "2026-06-11T12:05:45.816608+00:00",
     "total_gpus": 8,
     "gpus_per_worker": 2,
     "num_workers": 4,
@@ -526,6 +526,6 @@
         "eval_device_id": 1
       }
     ],
-    "finished_at": "2026-06-10T13:51:47.608055+00:00"
+    "finished_at": "2026-06-11T12:20:52.459755+00:00"
   }
 }

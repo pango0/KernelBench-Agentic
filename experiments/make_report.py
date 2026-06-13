@@ -133,29 +133,63 @@ def write_csvs(summaries: dict, data_dir: Path) -> None:
             w.writerow([mt, me] + [tax.get(c, 0) for c in cats])
 
     # agentic ablation study (full agentic + each ablation variant)
-    rows = ablation_rows(summaries)
+    rows = all_agentic_rows(summaries)
     if rows:
         with (data_dir / "ablation_metrics.csv").open("w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
-            w.writerow(["model", "variant", "display", "n_tasks", "compilation_rate",
-                        "correctness_rate", "fast_1_rate", "geo_mean_speedup_correct"])
-            for mt, me, disp, s in rows:
+            w.writerow(["model", "variant", "display", "group", "best_of_n", "n_tasks",
+                        "compilation_rate", "correctness_rate", "fast_1_rate",
+                        "geo_mean_speedup_correct"])
+            for mt, me, disp, group, n, s in rows:
                 o = s["overall"]
-                w.writerow([mt, me, disp, s["n_tasks"], _r(o["compilation_rate"]),
+                w.writerow([mt, me, disp, group, n, s["n_tasks"], _r(o["compilation_rate"]),
                             _r(o["correctness_rate"]), _r(o["fast_1_rate"]),
                             _r(o["geo_mean_speedup_correct"])])
 
 
-def ablation_rows(summaries: dict):
-    """Full agentic followed by each ablation variant, per model, where results exist."""
+def _best_of_n(spec) -> int:
+    a = spec.local_args
+    if "--best-of-n" in a:
+        try:
+            return int(a[a.index("--best-of-n") + 1])
+        except (ValueError, IndexError):
+            return 1
+    return 1
+
+
+def all_agentic_rows(summaries: dict):
+    """Every agentic variant with results: (model, name, display, group, n, summary).
+
+    group is "full" for the headline Agentic cell, else the ablation_group
+    ("component" or "bestof"). Used to build both ablation sub-tables and the CSV.
+    """
     order = ["agentic"] + list(C.AGENTIC_ABLATIONS)
     rows = []
     for mt in C.MODELS:
         for me in order:
             s = summaries.get((mt, me))
-            if s:
-                rows.append((mt, me, C.method_spec(me).display, s))
+            if not s:
+                continue
+            spec = C.method_spec(me)
+            group = "full" if me == "agentic" else spec.ablation_group
+            rows.append((mt, me, spec.display, group, _best_of_n(spec), s))
     return rows
+
+
+def component_rows(summaries: dict):
+    """Full system first, then the one-component-off ablations (best-of-4 backbone)."""
+    return [r for r in all_agentic_rows(summaries) if r[3] in ("full", "component")]
+
+
+def bestof_rows(summaries: dict):
+    """The best-of-n test-time-compute sweep, ordered by n (n=4 is the full system)."""
+    rows = [r for r in all_agentic_rows(summaries) if r[3] in ("full", "bestof")]
+    return sorted(rows, key=lambda r: r[4])
+
+
+def ablation_rows(summaries: dict):
+    """Back-compat: full agentic followed by every ablation variant."""
+    return [(mt, me, disp, s) for mt, me, disp, _g, _n, s in all_agentic_rows(summaries)]
 
 
 def _r(x, nd=4):
@@ -240,6 +274,47 @@ def make_heatmaps(summaries: dict, fig_dir: Path) -> list[str]:
     return written
 
 
+def make_bestof_curve(summaries: dict, fig_dir: Path) -> list[str]:
+    """Line plot of compile/correct/fast_1 vs best-of-n (test-time-compute curve)."""
+    sweep = bestof_rows(summaries)
+    if len(sweep) < 2:
+        return []
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import matplotlib.ticker as mticker
+    except Exception as e:
+        print(f"(matplotlib unavailable: {e}; skipping best-of-n curve)")
+        return []
+
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    ns = [n for *_rest, n, _s in sweep]
+    series = [
+        ("Compile %", "compilation_rate", "#1f77b4"),
+        ("Correct %", "correctness_rate", "#2ca02c"),
+        ("fast_1 %", "fast_1_rate", "#d62728"),
+    ]
+    fig, ax = plt.subplots(figsize=(6, 4))
+    for label, key, color in series:
+        ys = [sweep[i][-1]["overall"][key] * 100 for i in range(len(sweep))]
+        ax.plot(ns, ys, "o-", label=label, color=color, linewidth=2, markersize=7)
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(ns)
+    ax.get_xaxis().set_major_formatter(mticker.ScalarFormatter())
+    ax.set_xlabel("best-of-n candidates per turn (log scale)")
+    ax.set_ylabel("rate (%)")
+    ax.set_title("Agentic test-time-compute scaling (n=1,2,4,8)")
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+    fig.tight_layout()
+    out = fig_dir / "bestof_scaling.png"
+    fig.savefig(out, dpi=130)
+    plt.close(fig)
+    print(f"Wrote {out}")
+    return [out.name]
+
+
 # ---------------------------------------------------------------------------
 # REPORT.md
 # ---------------------------------------------------------------------------
@@ -315,21 +390,41 @@ def write_report(summaries: dict, figures: list[str], report_dir: Path) -> None:
           " | ".join(str(tax.get(c, 0)) for c in cats) + " |")
     A("")
 
-    rows = ablation_rows(summaries)
-    if rows:
+    comp = component_rows(summaries)
+    if comp:
         A("## 6. Agentic ablation study\n")
         A("The full agentic system is the multi-agent loop (Code Analyzer + RAG "
-          "Researcher + Kernel Generator + Evaluator + Feedback Analyzer). Each "
-          "variant below flips exactly one component; comparing it to the full system "
-          "isolates that component's contribution. See `docs/AGENTIC_METHOD.md`.\n")
+          "Researcher + Kernel Generator + Evaluator + Feedback Analyzer) over a "
+          "best-of-4 backbone. Each row below flips exactly one component off against "
+          "that same backbone, so the gap to the full system isolates that component's "
+          "contribution. See `docs/AGENTIC_METHOD.md`.\n")
+        A("### 6.1 Component ablations (best-of-4 backbone)\n")
         A("| variant | correct% | fast_1% | geo-mean speedup | compile% | tasks |")
         A("|---|---|---|---|---|---|")
-        for _mt, _me, disp, s in rows:
+        for _mt, _me, disp, _g, _n, s in comp:
             o = s["overall"]
-            A(f"| {disp} | {o['correctness_rate']*100:.0f}% | {o['fast_1_rate']*100:.0f}% | "
+            label = "**Agentic (full)**" if _me == "agentic" else disp
+            A(f"| {label} | {o['correctness_rate']*100:.0f}% | {o['fast_1_rate']*100:.0f}% | "
               f"{o['geo_mean_speedup_correct']:.2f}x | {o['compilation_rate']*100:.0f}% | "
               f"{s['n_tasks']} |")
         A("")
+
+    sweep = bestof_rows(summaries)
+    if len(sweep) > 1:
+        A("### 6.2 Test-time-compute: best-of-n sweep\n")
+        A("Full agentic system, varying only the number of candidates sampled and "
+          "evaluated per turn (the Evaluator keeps the best). n=1 is greedy; n=4 is the "
+          "headline system. This isolates the compute-for-quality trade-off.\n")
+        A("| best-of-n | correct% | fast_1% | geo-mean speedup | compile% | tasks |")
+        A("|---|---|---|---|---|---|")
+        for _mt, _me, _disp, _g, n, s in sweep:
+            o = s["overall"]
+            A(f"| n={n} | {o['correctness_rate']*100:.0f}% | {o['fast_1_rate']*100:.0f}% | "
+              f"{o['geo_mean_speedup_correct']:.2f}x | {o['compilation_rate']*100:.0f}% | "
+              f"{s['n_tasks']} |")
+        A("")
+        if "bestof_scaling.png" in figures:
+            A("![bestof_scaling.png](figures/bestof_scaling.png)\n")
 
     A("## 7. Discussion (to write)\n")
     A("- How much does richer guidance (guided / iterative / agentic) lift the local "
@@ -361,6 +456,7 @@ def main() -> int:
           + ", ".join(f"{mt}/{me}" for mt, me in summaries))
     write_csvs(summaries, C.REPORT_DIR / "data")
     figures = make_heatmaps(summaries, C.REPORT_DIR / "figures")
+    figures += make_bestof_curve(summaries, C.REPORT_DIR / "figures")
     write_report(summaries, figures, C.REPORT_DIR)
     print("\nReport ready at report/REPORT.md")
     return 0

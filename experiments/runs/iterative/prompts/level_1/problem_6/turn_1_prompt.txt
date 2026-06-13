@@ -50,8 +50,8 @@ Iterative refinement (turn 1). Your previous submission was tested on a GPU:
 turn=0
 compiled=True
 correctness=True
-runtime_ms=4.55
-ref_runtime_ms=4.55
+runtime_ms=4.56
+ref_runtime_ms=4.56
 speedup=1.0000
 
 Previous submission:

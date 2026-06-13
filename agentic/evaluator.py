@@ -84,6 +84,50 @@ def evaluate_kernel(ref_arch_src: str, code: str, eval_device_id: int, *,
                 "metadata": {"runtime_error": str(e)}}
 
 
+def _eval_child(q, ref_arch_src, code, eval_device_id, kwargs):
+    """Run one evaluation in a child process and ship the result dict back."""
+    try:
+        q.put(evaluate_kernel(ref_arch_src, code, eval_device_id, **kwargs))
+    except Exception as e:  # noqa: BLE001
+        q.put({"compiled": False, "correctness": False, "error": str(e),
+               "metadata": {"runtime_error": str(e)}})
+
+
+def evaluate_kernel_safe(ref_arch_src: str, code: str, eval_device_id: int, *,
+                         timeout_s: float = 240.0, **kwargs) -> dict:
+    """`evaluate_kernel` with a hard wall-clock timeout.
+
+    Generated CUDA can hang at runtime (infinite loops, device deadlocks); a Python
+    signal will not interrupt a stuck CUDA call, so we run the evaluation in a child
+    process and SIGKILL it if it overruns. A timed-out kernel is reported as a normal
+    (compiled?/incorrect) failure instead of wedging the whole worker forever.
+    """
+    import multiprocessing as mp
+
+    ctx = mp.get_context("spawn")
+    q = ctx.Queue()
+    p = ctx.Process(target=_eval_child,
+                    args=(q, ref_arch_src, code, eval_device_id, kwargs))
+    p.start()
+    p.join(timeout_s)
+    if p.is_alive():
+        p.terminate()
+        p.join(5)
+        if p.is_alive():
+            p.kill()
+            p.join()
+        return {"compiled": False, "correctness": False,
+                "error": f"eval timeout after {timeout_s:.0f}s",
+                "metadata": {"runtime_error": f"evaluation hung > {timeout_s:.0f}s (killed)",
+                             "timeout": True}}
+    try:
+        return q.get_nowait()
+    except Exception:  # noqa: BLE001
+        return {"compiled": False, "correctness": False,
+                "error": "eval subprocess produced no result",
+                "metadata": {"runtime_error": "eval subprocess died without returning"}}
+
+
 def format_eval_feedback(ev: dict, turn: int) -> str:
     """Human-readable feedback string passed to the Feedback Analyzer / generator."""
     if not ev:

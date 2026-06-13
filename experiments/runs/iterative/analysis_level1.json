@@ -8,7 +8,7 @@
   "correct_count": 9,
   "compilation_rate": 1.0,
   "correctness_rate": 0.9,
-  "geo_mean_speedup": 0.9666693571294123,
+  "geo_mean_speedup": 0.9709387721311478,
   "fast_p": {
     "0.0": 0.9,
     "0.5": 0.9,

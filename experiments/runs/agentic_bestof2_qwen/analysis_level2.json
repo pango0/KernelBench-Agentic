@@ -1,0 +1,20 @@
+{
+  "run_name": "agentic_bestof2_qwen",
+  "level": 2,
+  "hardware": "V100_SXM2_32GB",
+  "total_count": 100,
+  "total_eval": 10,
+  "compiled_count": 6,
+  "correct_count": 2,
+  "compilation_rate": 0.6,
+  "correctness_rate": 0.2,
+  "geo_mean_speedup": 0.9598490222505767,
+  "fast_p": {
+    "0.0": 0.2,
+    "0.5": 0.2,
+    "0.8": 0.2,
+    "1.0": 0.0,
+    "1.5": 0.0,
+    "2.0": 0.0
+  }
+}

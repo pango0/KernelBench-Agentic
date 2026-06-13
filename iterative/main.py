@@ -180,26 +180,28 @@ def _setup_kernelbench():
         sys.path.insert(0, str(KB_SRC))
 
 
+def _turn_rank(t):
+    """Rank a turn by (correct, compiled, speedup) so a later turn never demotes an
+    earlier compiling/correct one. Previously the fallback returned the *last* coded
+    turn, which could discard a turn that compiled for one that did not — dropping the
+    method's compile rate below plain zero-shot."""
+    ev = t.get("eval") or {}
+    correct = bool(ev.get("correctness"))
+    compiled = bool(ev.get("compiled"))
+    rt = ev.get("runtime", -1.0) or -1.0
+    ref = ev.get("ref_runtime", -1.0) or -1.0
+    speedup = (ref / rt) if (correct and rt > 0 and ref > 0) else 0.0
+    # turn index is the final tiebreaker so equal-rank turns resolve to the latest
+    # attempt (the model's most-refined output), preserving the old fallback semantics.
+    return (2 if correct else (1 if compiled else 0), speedup, t.get("turn", 0))
+
+
 def pick_best_turn(turns):
-    best = None
-    best_speedup = -1.0
-    for t in reversed(turns):
-        ev = t.get("eval") or {}
-        if ev.get("correctness") and t.get("extracted_code"):
-            rt = ev.get("runtime", -1.0)
-            ref = ev.get("ref_runtime", -1.0)
-            if rt > 0 and ref > 0:
-                sp = ref / rt
-                if sp >= best_speedup:
-                    best_speedup = sp
-                    best = t
-            elif best is None:
-                best = t
-    if best is not None:
-        return best
-    for t in reversed(turns):
-        if t.get("extracted_code"):
-            return t
+    coded = [t for t in turns if t.get("extracted_code")]
+    if coded:
+        # max() keeps the earliest turn on ties, so a correct/compiling result is not
+        # silently replaced by a later regression of equal rank.
+        return max(coded, key=_turn_rank)
     return turns[-1] if turns else None
 
 

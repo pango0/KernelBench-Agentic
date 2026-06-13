@@ -26,6 +26,8 @@ Here is GPU profiling information for the reference PyTorch implementation (meas
 {body}
 
 Use this profiling data to guide your optimization: focus on the highest-cost operators, consider kernel fusion where multiple hot ops appear in sequence, and target memory-bound vs compute-bound behavior implied by the dominant kernels.
+
+Important: PyTorch already dispatches matmul/linear and convolution to highly tuned cuBLAS/cuDNN kernels — a hand-written CUDA replacement for a plain GEMM or conv will almost always be SLOWER, not faster. Do not reimplement those from scratch. Instead, keep using the torch operator for the heavy compute and win by (1) fusing the cheap memory-bound epilogue around it (bias + activation + scale + clamp into one pass) and (2) replacing pure elementwise / reduction / normalization chains, where a custom kernel can actually cut memory traffic. Correctness first: only optimize an operator if you can keep the result numerically identical to the reference.
 """
 
 

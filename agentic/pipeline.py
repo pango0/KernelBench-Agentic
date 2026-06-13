@@ -47,6 +47,11 @@ class AgenticConfig:
     research_max_tokens: int = 900
     feedback_max_tokens: int = 900
     collect_data: bool = False
+    # Safety net: if no turn produced compiling code, ship the unoptimised reference
+    # (ModelNew = Model) so the agent never emits a broken kernel. OFF by default — a
+    # passthrough is trivially correct at ~1x, so counting it as a benchmark "win"
+    # would distort the study; turn it on only for a deployment-style floor.
+    fallback_to_reference: bool = False
 
 
 def read_ref_arch(entry: dict) -> str:
@@ -212,6 +217,24 @@ def run_problem(llm, evaluate: Callable[[str, str], dict], retriever,
                     feedback_text = rec["feedback"]
             else:
                 feedback_text = rec["feedback"]
+
+    # --- Optional reference fallback (deployment floor; off by default) ---
+    if cfg.fallback_to_reference and not any((t.get("eval") or {}).get("compiled") for t in turns):
+        print(f"  {tag} no compiling turn -> reference fallback", flush=True)
+        fb_code = ref_src.rstrip() + (
+            "\n\n# Fallback: the agent could not produce a compiling custom kernel; "
+            "ship the unoptimised reference unchanged.\nModelNew = Model\n"
+        )
+        fb_eval = evaluate(ref_src, fb_code)
+        turns.append({
+            "turn": len(turns),
+            "prompt_kind": "fallback_reference",
+            "raw_response": "",
+            "extracted_code": fb_code,
+            "eval": fb_eval,
+            "feedback": format_eval_feedback(fb_eval, len(turns)),
+            "status": "fallback_reference",
+        })
 
     out = _build_result(entry, base_prompt, analysis, rb, turns)
     if cfg.collect_data:

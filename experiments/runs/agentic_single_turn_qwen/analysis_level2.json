@@ -1,0 +1,20 @@
+{
+  "run_name": "agentic_single_turn_qwen",
+  "level": 2,
+  "hardware": "V100_SXM2_32GB",
+  "total_count": 100,
+  "total_eval": 10,
+  "compiled_count": 9,
+  "correct_count": 3,
+  "compilation_rate": 0.9,
+  "correctness_rate": 0.3,
+  "geo_mean_speedup": 0.9771804299126473,
+  "fast_p": {
+    "0.0": 0.3,
+    "0.5": 0.3,
+    "0.8": 0.3,
+    "1.0": 0.1,
+    "1.5": 0.0,
+    "2.0": 0.0
+  }
+}

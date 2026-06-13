@@ -1,6 +1,6 @@
 turn=0
 compiled=True
 correctness=True
-runtime_ms=22.5
-ref_runtime_ms=21.1
-speedup=0.9378
+runtime_ms=21.5
+ref_runtime_ms=20.8
+speedup=0.9674

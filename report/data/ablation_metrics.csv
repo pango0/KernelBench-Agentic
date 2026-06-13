@@ -1,0 +1,9 @@
+model,variant,display,group,best_of_n,n_tasks,compilation_rate,correctness_rate,fast_1_rate,geo_mean_speedup_correct
+qwen,agentic,Agentic,full,4,30,0.7333,0.3,0.1,0.9721
+qwen,agentic_no_rag,− RAG Researcher,component,4,30,0.7667,0.2,0.0667,0.9734
+qwen,agentic_no_analyzer,− Code Analyzer,component,4,30,0.6333,0.2,0.1,0.9871
+qwen,agentic_no_feedback,− Feedback Analyzer,component,4,30,0.7333,0.3667,0.1,0.964
+qwen,agentic_single_turn,− Refinement loop (1 turn),component,4,30,0.7,0.2,0.1,0.9764
+qwen,agentic_no_bestof,"− best-of-n (greedy, n=1)",component,1,30,0.2333,0.0333,0.0,0.9505
+qwen,agentic_bestof2,best-of-2,bestof,2,30,0.5333,0.2667,0.1333,0.9755
+qwen,agentic_bestof8,best-of-8,bestof,8,30,0.8,0.3333,0.1333,0.9767

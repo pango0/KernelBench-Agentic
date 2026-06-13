@@ -50,9 +50,9 @@ Iterative refinement (turn 1). Your previous submission was tested on a GPU:
 turn=0
 compiled=True
 correctness=True
-runtime_ms=10.9
-ref_runtime_ms=9.83
-speedup=0.9018
+runtime_ms=10.8
+ref_runtime_ms=9.4
+speedup=0.8704
 
 Previous submission:
 ```python
@@ -61,26 +61,20 @@ import torch.nn as nn
 from torch.autograd import Function
 from torch.cuda.amp import custom_fwd, custom_bwd
 
-class MatMulCUDA(Function):
+class MatMulFunction(Function):
     @staticmethod
     @custom_fwd(cast_inputs=torch.float32)
     def forward(ctx, A, B):
-        C = torch.empty((A.shape[0], B.shape[1]), device=A.device, dtype=torch.float32)
-        torch.cuda.synchronize()
-        C.record_stream(torch.cuda.current_stream())
-        C.fill_(0)
-        C.record_stream(torch.cuda.current_stream())
-        torch.cuda.synchronize()
-        C = torch.mm(A, B)
         ctx.save_for_backward(A, B)
+        C = torch.matmul(A, B)
         return C
 
     @staticmethod
     @custom_bwd
     def backward(ctx, grad_output):
         A, B = ctx.saved_tensors
-        grad_A = torch.mm(grad_output, B.t())
-        grad_B = torch.mm(A.t(), grad_output)
+        grad_A = torch.matmul(grad_output, B.t())
+        grad_B = torch.matmul(A.t(), grad_output)
         return grad_A, grad_B
 
 class ModelNew(nn.Module):
@@ -101,7 +95,7 @@ class ModelNew(nn.Module):
         Returns:
             Output tensor of shape (M, N).
         """
-        return MatMulCUDA.apply(A, B)
+        return MatMulFunction.apply(A, B)
 
 # Example usage
 M = 1024 * 2

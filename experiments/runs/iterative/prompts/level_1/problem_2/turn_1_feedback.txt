@@ -1,6 +1,6 @@
 turn=1
 compiled=True
-correctness=False
-runtime_ms=-1.0
-ref_runtime_ms=10.8
-runtime_error="'__name__' not in globals"
+correctness=True
+runtime_ms=10.6
+ref_runtime_ms=9.83
+speedup=0.9274

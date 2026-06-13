@@ -129,6 +129,7 @@ def _config_from_args(args) -> "P.AgenticConfig":
         target_speedup=args.target_speedup,
         max_new_tokens=args.max_new_tokens,
         collect_data=args.collect_data,
+        fallback_to_reference=args.fallback_to_reference,
     )
 
 
@@ -139,7 +140,7 @@ def local_gpu_worker(worker_plan: dict, tasks: list, args_dict: dict, result_que
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from llm import LocalLLM
     from rag import build_retriever
-    from evaluator import evaluate_kernel
+    from evaluator import evaluate_kernel_safe
 
     args = argparse.Namespace(**args_dict)
     cfg = _config_from_args(args)
@@ -169,8 +170,9 @@ def local_gpu_worker(worker_plan: dict, tasks: list, args_dict: dict, result_que
               f"(backend={args.rag_backend})", flush=True)
 
     def evaluate(ref_src, code):
-        return evaluate_kernel(
+        return evaluate_kernel_safe(
             ref_src, code, eval_device_id,
+            timeout_s=args.eval_timeout,
             num_correct_trials=args.num_correct_trials,
             num_perf_trials=args.num_perf_trials,
             backend=args.backend, precision=args.precision,
@@ -236,6 +238,9 @@ def main() -> None:
     # Eval
     parser.add_argument("--num-correct-trials", type=int, default=5)
     parser.add_argument("--num-perf-trials", type=int, default=10)
+    parser.add_argument("--eval-timeout", type=float, default=240.0,
+                        help="hard per-kernel eval timeout (s); a hung CUDA kernel is "
+                             "killed and scored as a failure instead of wedging the run")
     parser.add_argument("--backend", default="cuda")
     parser.add_argument("--precision", default="fp32")
     parser.add_argument("--eval-verbose", action="store_true")
@@ -243,6 +248,10 @@ def main() -> None:
     # Control
     parser.add_argument("--stop-on-correct", action="store_true")
     parser.add_argument("--target-speedup", type=float, default=None)
+    parser.add_argument("--fallback-to-reference", action="store_true",
+                        help="if no turn compiles, ship ModelNew = Model (correct ~1x) "
+                             "as a deployment floor; off by default so passthroughs do "
+                             "not inflate benchmark correctness")
 
     args = parser.parse_args()
     args.docs_dir = str(args.docs_dir)

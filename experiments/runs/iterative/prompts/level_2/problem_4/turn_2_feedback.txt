@@ -2,5 +2,5 @@ turn=2
 compiled=True
 correctness=False
 runtime_ms=-1.0
-ref_runtime_ms=54.9
+ref_runtime_ms=55.0
 runtime_error=Given groups=1, weight of size [128, 64, 3, 3], expected input[64, 128, 254, 254] to have 64 channels, but got 128 channels instead

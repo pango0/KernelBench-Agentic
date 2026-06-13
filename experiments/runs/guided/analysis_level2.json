@@ -4,9 +4,9 @@
   "hardware": "V100_SXM2_32GB",
   "total_count": 100,
   "total_eval": 10,
-  "compiled_count": 5,
+  "compiled_count": 6,
   "correct_count": 0,
-  "compilation_rate": 0.5,
+  "compilation_rate": 0.6,
   "correctness_rate": 0.0,
   "geo_mean_speedup": 0.0,
   "fast_p": {

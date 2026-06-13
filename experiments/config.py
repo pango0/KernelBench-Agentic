@@ -177,12 +177,20 @@ class MethodSpec:
     # extra CLI args appended for local generation
     local_args: list[str] = field(default_factory=list)
     ablation: bool = False   # True for agentic ablation variants (not in the core matrix)
+    # which study an ablation belongs to: "component" (flip one agent) or
+    # "bestof" (test-time-compute sweep). Unused for core methods.
+    ablation_group: str = "component"
 
 
-# Shared launch args for the agentic multi-agent method (and its ablations).
-def _agentic_args(*, max_turns: int = 3, extra: tuple[str, ...] = ()) -> list[str]:
+# Shared launch args for the agentic multi-agent method (and its ablations). best-of-4
+# sampling is part of the *full* system baseline, so every component ablation flips
+# exactly one agent against the same best-of-4 backbone (the best-of-n sweep overrides
+# it explicitly).
+def _agentic_args(*, max_turns: int = 3, best_of_n: int = 4,
+                  extra: tuple[str, ...] = ()) -> list[str]:
     return ["--num-gpus", "8", "--gpus-per-worker", "2",
             "--max-turns", str(max_turns), "--max-new-tokens", "4096",
+            "--best-of-n", str(best_of_n),
             "--num-correct-trials", "5", "--num-perf-trials", "10", *extra]
 
 
@@ -229,7 +237,8 @@ METHODS: dict[str, MethodSpec] = {
         inline_eval=True,
         multi_turn=True,
         # full multi-agent system: Code Analyzer + RAG Researcher + Feedback
-        # Analyzer + post-training data collection.
+        # Analyzer + best-of-4 sampling (from _agentic_args) + post-training data.
+        # best-of-n is the highest-leverage knob; the per-turn evaluator keeps the best.
         local_args=_agentic_args(extra=("--collect-data",)),
     ),
 }
@@ -244,30 +253,50 @@ METHODS: dict[str, MethodSpec] = {
 # ablation section; they are NOT part of the core model x method matrix.
 
 AGENTIC_ABLATIONS: dict[str, MethodSpec] = {
+    # --- Component ablations: best-of-4 backbone, flip exactly one agent off ---
     "agentic_no_rag": MethodSpec(
-        name="agentic_no_rag", display="Agentic − RAG", main=AGENTIC_MAIN,
+        name="agentic_no_rag", display="− RAG Researcher", main=AGENTIC_MAIN,
         data=DATA_ZEROSHOT, inline_eval=True, multi_turn=True, ablation=True,
+        ablation_group="component",
         local_args=_agentic_args(extra=("--no-rag",)),
     ),
     "agentic_no_analyzer": MethodSpec(
-        name="agentic_no_analyzer", display="Agentic − Code Analyzer", main=AGENTIC_MAIN,
+        name="agentic_no_analyzer", display="− Code Analyzer", main=AGENTIC_MAIN,
         data=DATA_ZEROSHOT, inline_eval=True, multi_turn=True, ablation=True,
+        ablation_group="component",
         local_args=_agentic_args(extra=("--no-code-analyzer",)),
     ),
     "agentic_no_feedback": MethodSpec(
-        name="agentic_no_feedback", display="Agentic − Feedback Analyzer", main=AGENTIC_MAIN,
+        name="agentic_no_feedback", display="− Feedback Analyzer", main=AGENTIC_MAIN,
         data=DATA_ZEROSHOT, inline_eval=True, multi_turn=True, ablation=True,
+        ablation_group="component",
         local_args=_agentic_args(extra=("--no-feedback-analyzer",)),
     ),
     "agentic_single_turn": MethodSpec(
-        name="agentic_single_turn", display="Agentic (1 turn, no loop)", main=AGENTIC_MAIN,
+        name="agentic_single_turn", display="− Refinement loop (1 turn)", main=AGENTIC_MAIN,
         data=DATA_ZEROSHOT, inline_eval=True, multi_turn=False, ablation=True,
+        ablation_group="component",
         local_args=_agentic_args(max_turns=1),
     ),
-    "agentic_bestof2": MethodSpec(
-        name="agentic_bestof2", display="Agentic + best-of-2", main=AGENTIC_MAIN,
+    "agentic_no_bestof": MethodSpec(
+        name="agentic_no_bestof", display="− best-of-n (greedy, n=1)", main=AGENTIC_MAIN,
         data=DATA_ZEROSHOT, inline_eval=True, multi_turn=True, ablation=True,
-        local_args=_agentic_args(extra=("--best-of-n", "2")),
+        ablation_group="component",
+        local_args=_agentic_args(best_of_n=1),
+    ),
+    # --- Test-time-compute sweep: full system, vary best-of-n (n=1 is no_bestof,
+    #     n=4 is the full Agentic cell). These two add the n=2 and n=8 points. ---
+    "agentic_bestof2": MethodSpec(
+        name="agentic_bestof2", display="best-of-2", main=AGENTIC_MAIN,
+        data=DATA_ZEROSHOT, inline_eval=True, multi_turn=True, ablation=True,
+        ablation_group="bestof",
+        local_args=_agentic_args(best_of_n=2),
+    ),
+    "agentic_bestof8": MethodSpec(
+        name="agentic_bestof8", display="best-of-8", main=AGENTIC_MAIN,
+        data=DATA_ZEROSHOT, inline_eval=True, multi_turn=True, ablation=True,
+        ablation_group="bestof",
+        local_args=_agentic_args(best_of_n=8),
     ),
 }
 

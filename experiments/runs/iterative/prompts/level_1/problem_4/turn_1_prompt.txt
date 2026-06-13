@@ -50,7 +50,7 @@ turn=0
 compiled=True
 correctness=False
 runtime_ms=-1.0
-ref_runtime_ms=10.5
+ref_runtime_ms=10.6
 runtime_error=CUDA out of memory. Tried to allocate 4096.00 GiB. GPU 1 has a total capacity of 31.74 GiB of which 23.40 GiB is free. Including non-PyTorch memory, this process has 8.34 GiB memory in use. Of the ...
 
 Previous submission:
@@ -75,16 +75,24 @@ class MatMulBwd(Function):
         grad_input2 = torch.matmul(input1.t(), grad_grad_output)
         return grad_input1, grad_input2, None
 
+class CustomMatMul(nn.Module):
+    def __init__(self):
+        super(CustomMatMul, self).__init__()
+
+    def forward(self, A, B):
+        return MatMulBwd.apply(B, A, B)
+
 class ModelNew(nn.Module):
     """
-    Optimized model using custom CUDA operators for matrix-vector multiplication.
+    Optimized model using custom CUDA operators.
     """
     def __init__(self):
         super(ModelNew, self).__init__()
+        self.custom_matmul = CustomMatMul()
 
     def forward(self, A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
         """
-        Performs matrix-vector multiplication using custom CUDA operators.
+        Performs matrix-vector multiplication.
 
         Args:
             A: Input matrix of shape (M, K).
@@ -93,7 +101,7 @@ class ModelNew(nn.Module):
         Returns:
             Output vector of shape (M, 1).
         """
-        return MatMulBwd.apply(B, A, B)
+        return self.custom_matmul(A, B)
 
 M = 256 * 8  # 2048
 K = 131072 * 8  # 1048576

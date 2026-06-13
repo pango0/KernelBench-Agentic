@@ -73,15 +73,20 @@ List the dominant tensor operations (matmul, conv, elementwise, reduction, norm,
 attention, ...) and their rough arithmetic intensity / memory behaviour.
 
 ## BOTTLENECKS
-Identify the 1-3 operations most worth replacing with a custom kernel and why.
+Identify the 1-3 operations most worth a custom kernel and why. Note: matmul/linear
+and convolution already run on tuned cuBLAS/cuDNN — flag these as "keep the torch op"
+rather than "reimplement", and prefer memory-bound elementwise/reduction/norm chains
+as the real custom-kernel targets.
 
 ## FUSION
-Concrete operator-fusion opportunities (e.g. conv+bias+relu, matmul+bias+gelu,
-online-softmax attention). Say which tensors stay in registers / shared memory.
+Concrete operator-fusion opportunities, prioritising the cheap memory-bound epilogue
+around an existing torch op (e.g. keep torch conv/matmul, then fuse bias+activation+
+scale+clamp into one pass). Say which tensors stay in registers / shared memory.
 
 ## STRATEGY
-A short, ordered optimisation plan (tiling, coalescing, shared memory, vectorised
-loads, warp reductions, ...). No code.
+A short, ordered plan that reaches a correct, compiling ModelNew first (reuse torch
+ops, fuse the epilogue) and only then considers heavier rewrites (tiling, coalescing,
+shared memory, warp reductions). Do not propose reimplementing a plain GEMM/conv. No code.
 
 ## RESEARCH_QUERIES
 3-5 short search queries (one per line, no numbering) that would retrieve the most
@@ -177,11 +182,20 @@ def research(llm, retriever, analysis: dict, queries: Optional[list[str]] = None
 # ---------------------------------------------------------------------------
 
 GENERATOR_SYSTEM = (
-    "You are an expert CUDA/HIP kernel engineer. You replace PyTorch operators with "
-    "correct, high-performance custom kernels using torch.utils.cpp_extension "
-    "(load_inline) or Triton. You output ONLY a single ```python``` code block that "
-    "defines class ModelNew(nn.Module) with the same interface as Model, plus "
-    "get_inputs() and get_init_inputs(). No prose, no tests."
+    "You are an expert CUDA/HIP kernel engineer. Your FIRST priority is a ModelNew that "
+    "compiles and matches the reference numerically; speed comes only after that. "
+    "PyTorch already dispatches matmul/linear and convolution to highly tuned "
+    "cuBLAS/cuDNN — do NOT reimplement a plain GEMM or conv as a custom kernel, it will "
+    "be slower. Keep the torch op for the heavy compute and add a custom kernel only "
+    "where it clearly helps: fusing the memory-bound epilogue (bias/activation/scale/"
+    "clamp) or replacing pure elementwise / reduction / normalization chains. When you "
+    "do write a torch.utils.cpp_extension kernel, use load_inline(name=..., "
+    "cpp_sources=..., cuda_sources=..., functions=[...]) — note load_inline takes "
+    "cpp_sources/cuda_sources, NOT a 'sources=' argument, and the pybind names in "
+    "'functions' must exactly match the C++ functions you define. Prefer one simple, "
+    "correct fused kernel over several ambitious ones. You output ONLY a single "
+    "```python``` code block that defines class ModelNew(nn.Module) with the same "
+    "interface as Model, plus get_inputs() and get_init_inputs(). No prose, no tests."
 )
 
 
@@ -200,7 +214,11 @@ def _generator_user(base_prompt: str, analysis: dict, brief: str,
         blocks.append("=== Evaluation feedback / required fixes ===\n" + feedback.strip())
     blocks.append(
         "Now output the complete optimised ModelNew in ONE ```python``` block. "
-        "It must compile and match the reference numerically before being fast."
+        "It must compile and match the reference numerically before being fast. "
+        "Keep torch's matmul/conv for the heavy compute and fuse only the cheap "
+        "epilogue; reach for a hand-written tiled GEMM/conv only if a correct, "
+        "compiling baseline already exists. A correct kernel at ~1x is worth far more "
+        "than an ambitious one that fails to compile."
     )
     return "\n\n".join(blocks)
 
